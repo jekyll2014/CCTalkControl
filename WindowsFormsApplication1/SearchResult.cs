@@ -171,7 +171,7 @@ public class ParseEscPos
                 commandParamSizeDefined.Add(commandDataBase.Rows[i][CSVColumns.CommandParameterSize].ToString());
                 if (commandParamSizeDefined.Last() == "?")
                 {
-                    commandParamSize.Add(dataFrameLength - 1);
+                    commandParamSize.Add(dataFrameLength);
                     for (int i1 = 0; i1 < commandParamSize.Count - 1; i1++) commandParamSize[commandParamSize.Count - 1] -= commandParamSize[i1];
                     if (commandParamSize[commandParamSize.Count - 1] < 0) commandParamSize[commandParamSize.Count - 1] = 0;
                 }

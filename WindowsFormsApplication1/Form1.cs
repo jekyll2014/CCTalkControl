@@ -927,7 +927,7 @@ namespace WindowsFormsApplication1
 
         private void COMPortToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SerialPopulate();
+            if(toolStripComboBox_PortName.Enabled) SerialPopulate();
         }
 
         public bool ArrayEqual(byte[] a1, byte[] b1)
