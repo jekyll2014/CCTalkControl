@@ -64,10 +64,10 @@ public class ParseEscPos
     public class CSVColumns
     {
         public static int CommandName { get; set; } = 0;
-        public static int CommandParameterSize { get; set; } = 1;
-        public static int CommandParameterType { get; set; } = 2;
-        public static int CommandParameterValue { get; set; } = 3;
-        public static int CommandDescription { get; set; } = 4;
+        public static int CommandDescription { get; set; } = 1;
+        public static int CommandParameterSize { get; set; } = 2;
+        public static int CommandParameterType { get; set; } = 3;
+        public static int CommandParameterValue { get; set; } = 4;
         public static int ReplyParameterSize { get; set; } = 5;
         public static int ReplyParameterType { get; set; } = 6;
         public static int ReplyParameterValue { get; set; } = 7;
@@ -95,10 +95,10 @@ public class ParseEscPos
         if (sourceData[_pos + 2] == hostAddress && sourceData[_pos + 3] != 0)
         {
             itIsReply = false;
-            CSVColumns.CommandParameterSize = 1;
-            CSVColumns.CommandParameterType = 2;
-            CSVColumns.CommandParameterValue = 3;
-            CSVColumns.CommandDescription = 4;
+            CSVColumns.CommandDescription = 1;
+            CSVColumns.CommandParameterSize = 2;
+            CSVColumns.CommandParameterType = 3;
+            CSVColumns.CommandParameterValue = 4;            
         }
         else if (sourceData[_pos + 2] == deviceAddress && sourceData[_pos + 3] == 0)
         {
@@ -372,9 +372,13 @@ public class ParseEscPos
 
     public static string RawToString(byte[] b, byte n)
     {
-        string outStr = Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b);
-        if (outStr.Length > n) outStr = outStr.Substring(0, n);
-        return outStr;
+        if (Accessory.PrintableByteArray(b))
+        {
+            string outStr = Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b);
+            if (outStr.Length > n) outStr = outStr.Substring(0, n);
+            return outStr;
+        }
+        else return ("");
     }
 
     public static double RawToNumber(byte[] b)
@@ -390,7 +394,7 @@ public class ParseEscPos
     public static string RawToData(byte[] b)
     {
         if (Accessory.PrintableByteArray(b)) return ("\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b) + "\"");
-        else return ("[" + Accessory.ConvertByteArrayToHex(b) + "]");
+        else return ("");
     }
 
     public static double RawToBitfield(byte b)

@@ -146,7 +146,13 @@ namespace WindowsFormsApplication1
             byte command = 0;
 
             //check if it's a command or reply
-            if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == hostAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) != 0) command = Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)); //command
+            // if command
+            if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == hostAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) != 0)
+            {
+                command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex].ToString().Substring(9, 3));
+                command = Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3));
+            }
+            // if reply
             else if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == deviceAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) == 0)
             {
                 if (listBox_code.SelectedIndex > 0) command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex - 1].ToString().Substring(9, 3)); //reply
@@ -358,16 +364,6 @@ namespace WindowsFormsApplication1
         {
             enableDatabaseEditToolStripMenuItem.Checked = !enableDatabaseEditToolStripMenuItem.Checked;
             dataGridView_commands.ReadOnly = !enableDatabaseEditToolStripMenuItem.Checked;
-        }
-
-        public static bool PrintableHex(string str)
-        {
-            for (int i = 0; i < str.Length; i += 3)
-            {
-                if (!byte.TryParse(str.Substring(i, 3), NumberStyles.HexNumber, null, out byte n)) return false;
-                else if (n < 32 && n != 0) return false;
-            }
-            return true;
         }
 
         private void DataGridView_result_CellValueChanged(object sender, DataGridViewCellEventArgs e)
