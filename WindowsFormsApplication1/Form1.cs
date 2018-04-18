@@ -378,32 +378,32 @@ namespace WindowsFormsApplication1
                 if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.Bitfield)
                 {
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = ParseEscPos.BitfieldToRaw(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString());
-                    int n = 0;
-                    int.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString(), out n);
+                    byte n = 0;
+                    byte.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString(), out n);
                     int i = dataGridView_result.CurrentRow.Index;
                     for (int i1 = 0; i1 < 8; i1++)
                     {
-                        dataGridView_result.Rows[i + 1 + i1].Cells[ResultColumns.Value].Value = Convert.ToInt32(Accessory.GetBit((byte)n, (byte)i1)).ToString();
+                        dataGridView_result.Rows[i + 1 + i1].Cells[ResultColumns.Value].Value = Convert.ToInt32(Accessory.GetBit(n, (byte)i1)).ToString();
                     }
                 }
                 else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.Data)
                 {
-                    int n = 0;
-                    if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString() == "?") n = dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString().Length;
-                    else int.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
+                    byte n = 0;
+                    if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString() == "?") n = (byte)dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString().Length;
+                    else byte.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = ParseEscPos.DataToRaw(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString(), n);
                 }
                 else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.Number)
                 {
-                    int n = 0;
-                    int.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
+                    byte n = 0;
+                    byte.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = ParseEscPos.NumberToRaw(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString(), n);
                 }
                 else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.String)
                 {
-                    int n = 0;
-                    if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString() == "?") n = dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString().Length;
-                    else int.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
+                    byte n = 0;
+                    if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString() == "?") n = (byte)dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString().Length;
+                    else byte.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = ParseEscPos.StringToRaw(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString(), n);
                 }
                 else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString().StartsWith("bit"))
@@ -426,9 +426,9 @@ namespace WindowsFormsApplication1
                 if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.String)
                 {
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = Accessory.CheckHexString(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString());
-                    int n = 0;
-                    if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString() == "?") n = dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString().Length / 3;
-                    else int.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
+                    byte n = 0;
+                    if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString() == "?") n = (byte)(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString().Length / 3);
+                    else byte.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value = ParseEscPos.RawToString(Accessory.ConvertHexToByteArray(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString()), n);
                 }
                 else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.Number)

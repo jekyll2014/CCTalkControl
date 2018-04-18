@@ -222,7 +222,7 @@ public class ParseEscPos
                 if (commandParamPosition + commandParamSize[parameter] <= sourceData.Count - 1)
                 {
                     _raw = sourceData.GetRange(commandParamPosition, commandParamSize[parameter]);
-                    _val = RawToString(_raw.ToArray(), commandParamSize[parameter]);
+                    _val = RawToString(_raw.ToArray(), (byte)commandParamSize[parameter]);
                 }
                 else
                 {
@@ -370,7 +370,7 @@ public class ParseEscPos
         return (byte)(256 - sum);
     }
 
-    public static string RawToString(byte[] b, int n)
+    public static string RawToString(byte[] b, byte n)
     {
         string outStr = Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage).GetString(b);
         if (outStr.Length > n) outStr = outStr.Substring(0, n);
@@ -398,7 +398,7 @@ public class ParseEscPos
         return b;
     }
 
-    public static string StringToRaw(string s, int n)
+    public static string StringToRaw(string s, byte n)
     {
         //while (s.Length < n) s += "\0";
         //return Accessory.ConvertStringToHex(s, CustomFiscalControl.Properties.Settings.Default.CodePage).Substring(0, n * 3);
@@ -408,7 +408,7 @@ public class ParseEscPos
         return outStr;
     }
 
-    public static string NumberToRaw(string s, int n)
+    public static string NumberToRaw(string s, byte n)
     {
         double d = 0;
         if (s != "") double.TryParse(s, out d);
@@ -424,7 +424,7 @@ public class ParseEscPos
         return str;
     }
 
-    public static string DataToRaw(string s, int n)
+    public static string DataToRaw(string s, byte n)
     {
         string outStr = "";
         if (s.Substring(0, 1) == "[") outStr = s.Substring(1, s.Length - 2);
