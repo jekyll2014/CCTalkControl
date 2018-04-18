@@ -32,7 +32,7 @@ namespace WindowsFormsApplication1
             InitializeComponent();
             listBox_code.Items.Add("");
             listBox_code.SelectedIndex = 0;
-            commandsCSV_ToolStripTextBox.Text = CustomFiscalControl.Properties.Settings.Default.CommandsDatabaseFile;
+            commandsCSV_ToolStripTextBox.Text = CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile;
             ReadCsv(commandsCSV_ToolStripTextBox.Text, CommandDatabase);
             for (int i = 0; i < CommandDatabase.Rows.Count; i++) CommandDatabase.Rows[i][0] = Accessory.CheckHexString(CommandDatabase.Rows[i][0].ToString());
             dataGridView_commands.DataSource = CommandDatabase;
@@ -82,7 +82,7 @@ namespace WindowsFormsApplication1
             {
                 byte[] b = new byte[1];
                 b[0] = (byte)c;
-                inputStr.Append(Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage).GetString(b));
+                inputStr.Append(Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b));
                 c = inputFile.ReadByte();
             }
 
@@ -90,7 +90,7 @@ namespace WindowsFormsApplication1
             int colNum = 0;
             if (inputStr.Length != 0)
             {
-                string[] cells = inputStr.ToString().Split(CustomFiscalControl.Properties.Settings.Default.CSVdelimiter);
+                string[] cells = inputStr.ToString().Split(CCTalkControl.Properties.Settings.Default.CSVdelimiter);
                 colNum = cells.Length - 1;
                 for (int i = 0; i < colNum; i++)
                 {
@@ -109,13 +109,13 @@ namespace WindowsFormsApplication1
                     c = inputFile.ReadByte();
                     byte[] b = new byte[1];
                     b[0] = (byte)c;
-                    if (c == CustomFiscalControl.Properties.Settings.Default.CSVdelimiter) i++;
-                    if (c != -1) inputStr.Append(Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage).GetString(b));
+                    if (c == CCTalkControl.Properties.Settings.Default.CSVdelimiter) i++;
+                    if (c != -1) inputStr.Append(Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b));
                 }
                 while (c != '\r' && c != '\n' && c != -1) c = inputFile.ReadByte();
-                if (inputStr.ToString().Replace(CustomFiscalControl.Properties.Settings.Default.CSVdelimiter, ' ').Trim().TrimStart('\r').TrimStart('\n').TrimEnd('\n').TrimEnd('\r') != "")
+                if (inputStr.ToString().Replace(CCTalkControl.Properties.Settings.Default.CSVdelimiter, ' ').Trim().TrimStart('\r').TrimStart('\n').TrimEnd('\n').TrimEnd('\r') != "")
                 {
-                    string[] cells = inputStr.ToString().Split(CustomFiscalControl.Properties.Settings.Default.CSVdelimiter);
+                    string[] cells = inputStr.ToString().Split(CCTalkControl.Properties.Settings.Default.CSVdelimiter);
 
                     DataRow row = table.NewRow();
                     for (i = 0; i < cells.Length - 1; i++)
@@ -203,7 +203,7 @@ namespace WindowsFormsApplication1
                 dataGridView_commands.CurrentCell = dataGridView_commands.Rows[0].Cells[0];
                 //dataGridView_commands.FirstDisplayedCell = dataGridView_commands.CurrentCell;
                 //dataGridView_commands.Refresh();
-                if (Accessory.PrintableHex(listBox_code.SelectedItem.ToString())) row[ResultColumns.Description] = "\"" + Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage).GetString(Accessory.ConvertHexToByteArray(listBox_code.SelectedItem.ToString())) + "\"";
+                if (Accessory.PrintableHex(listBox_code.SelectedItem.ToString())) row[ResultColumns.Description] = "\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(Accessory.ConvertHexToByteArray(listBox_code.SelectedItem.ToString())) + "\"";
             }
         }
 
@@ -243,7 +243,7 @@ namespace WindowsFormsApplication1
 
         private void SaveCSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFileDialog.FileName = CustomFiscalControl.Properties.Settings.Default.CommandsDatabaseFile;
+            saveFileDialog.FileName = CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile;
             saveFileDialog.Title = "Save CSV database";
             saveFileDialog.DefaultExt = "csv";
             saveFileDialog.Filter = "CSV files|*.csv|All files|*.*";
@@ -255,7 +255,7 @@ namespace WindowsFormsApplication1
             if (saveFileDialog.Title == "Save HEX file")
             {
                 File.WriteAllText(saveFileDialog.FileName, "");
-                foreach (string s in listBox_code.Items) File.AppendAllText(saveFileDialog.FileName, s + "\r\n", Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage));
+                foreach (string s in listBox_code.Items) File.AppendAllText(saveFileDialog.FileName, s + "\r\n", Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage));
             }
             else if (saveFileDialog.Title == "Save CSV database")
             {
@@ -278,7 +278,7 @@ namespace WindowsFormsApplication1
                 }
                 try
                 {
-                    File.WriteAllText(saveFileDialog.FileName, output.ToString(), Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage));
+                    File.WriteAllText(saveFileDialog.FileName, output.ToString(), Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage));
                 }
                 catch (Exception ex)
                 {
@@ -347,10 +347,10 @@ namespace WindowsFormsApplication1
 
         private void DefaultCSVToolStripTextBox_Leave(object sender, EventArgs e)
         {
-            if (commandsCSV_ToolStripTextBox.Text != CustomFiscalControl.Properties.Settings.Default.CommandsDatabaseFile)
+            if (commandsCSV_ToolStripTextBox.Text != CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile)
             {
-                CustomFiscalControl.Properties.Settings.Default.CommandsDatabaseFile = commandsCSV_ToolStripTextBox.Text;
-                CustomFiscalControl.Properties.Settings.Default.Save();
+                CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile = commandsCSV_ToolStripTextBox.Text;
+                CCTalkControl.Properties.Settings.Default.Save();
             }
         }
 

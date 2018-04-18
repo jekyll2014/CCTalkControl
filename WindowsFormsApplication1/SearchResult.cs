@@ -372,7 +372,7 @@ public class ParseEscPos
 
     public static string RawToString(byte[] b, byte n)
     {
-        string outStr = Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage).GetString(b);
+        string outStr = Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b);
         if (outStr.Length > n) outStr = outStr.Substring(0, n);
         return outStr;
     }
@@ -389,7 +389,7 @@ public class ParseEscPos
 
     public static string RawToData(byte[] b)
     {
-        if (Accessory.PrintableByteArray(b)) return ("\"" + Encoding.GetEncoding(CustomFiscalControl.Properties.Settings.Default.CodePage).GetString(b) + "\"");
+        if (Accessory.PrintableByteArray(b)) return ("\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b) + "\"");
         else return ("[" + Accessory.ConvertByteArrayToHex(b) + "]");
     }
 
@@ -402,7 +402,7 @@ public class ParseEscPos
     {
         //while (s.Length < n) s += "\0";
         //return Accessory.ConvertStringToHex(s, CustomFiscalControl.Properties.Settings.Default.CodePage).Substring(0, n * 3);
-        string outStr = Accessory.ConvertStringToHex(s.Substring(1, s.Length - 2), CustomFiscalControl.Properties.Settings.Default.CodePage);
+        string outStr = Accessory.ConvertStringToHex(s.Substring(1, s.Length - 2), CCTalkControl.Properties.Settings.Default.CodePage);
         if (outStr.Length > n * 3) outStr = outStr.Substring(0, n * 3);
         while (outStr.Length < n * 3) outStr += "00 ";
         return outStr;
@@ -428,7 +428,7 @@ public class ParseEscPos
     {
         string outStr = "";
         if (s.Substring(0, 1) == "[") outStr = s.Substring(1, s.Length - 2);
-        else if (s.Substring(0, 1) == "\"") outStr = Accessory.ConvertStringToHex(s.Substring(1, s.Length - 2), CustomFiscalControl.Properties.Settings.Default.CodePage);
+        else if (s.Substring(0, 1) == "\"") outStr = Accessory.ConvertStringToHex(s.Substring(1, s.Length - 2), CCTalkControl.Properties.Settings.Default.CodePage);
         else return ("");
         if (outStr.Length > n * 3) outStr = outStr.Substring(0, n * 3);
         while (outStr.Length < n * 3) outStr += "00 ";

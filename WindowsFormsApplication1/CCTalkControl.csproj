@@ -7,8 +7,8 @@
     <ProjectGuid>{6C539287-7681-4292-9E57-13FA0872533C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomFiscalControl</RootNamespace>
-    <AssemblyName>CustomFiscalControl</AssemblyName>
+    <RootNamespace>CCTalkControl</RootNamespace>
+    <AssemblyName>CCTalkControl</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
