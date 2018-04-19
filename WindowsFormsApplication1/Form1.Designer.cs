@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView_commands = new System.Windows.Forms.DataGridView();
             this.button_next = new System.Windows.Forms.Button();
             this.button_find = new System.Windows.Forms.Button();
@@ -84,6 +84,8 @@
             this.contextMenuStrip_dataBase = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newCommandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showIncorrectRepliesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autoParseReplyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_commands)).BeginInit();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -108,14 +110,14 @@
             this.dataGridView_commands.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.dataGridView_commands.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridView_commands.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView_commands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_commands.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dataGridView_commands.Location = new System.Drawing.Point(0, 0);
@@ -214,7 +216,9 @@
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.commandsCSVFileName_ToolStripMenuItem,
-            this.enableDatabaseEditToolStripMenuItem});
+            this.enableDatabaseEditToolStripMenuItem,
+            this.showIncorrectRepliesToolStripMenuItem,
+            this.autoParseReplyToolStripMenuItem});
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.aboutToolStripMenuItem.Text = "Settings";
@@ -643,6 +647,24 @@
             this.findThisToolStripMenuItem.Text = "Find this";
             this.findThisToolStripMenuItem.Click += new System.EventHandler(this.FindThisToolStripMenuItem_Click);
             // 
+            // showIncorrectRepliesToolStripMenuItem
+            // 
+            this.showIncorrectRepliesToolStripMenuItem.Checked = true;
+            this.showIncorrectRepliesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showIncorrectRepliesToolStripMenuItem.Name = "showIncorrectRepliesToolStripMenuItem";
+            this.showIncorrectRepliesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.showIncorrectRepliesToolStripMenuItem.Text = "Show incorrect replies";
+            this.showIncorrectRepliesToolStripMenuItem.Click += new System.EventHandler(this.showIncorrectRepliesToolStripMenuItem_Click);
+            // 
+            // autoParseReplyToolStripMenuItem
+            // 
+            this.autoParseReplyToolStripMenuItem.Checked = true;
+            this.autoParseReplyToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.autoParseReplyToolStripMenuItem.Name = "autoParseReplyToolStripMenuItem";
+            this.autoParseReplyToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.autoParseReplyToolStripMenuItem.Text = "Auto parse reply";
+            this.autoParseReplyToolStripMenuItem.Click += new System.EventHandler(this.autoParseReplyToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -728,6 +750,8 @@
         private System.Windows.Forms.ToolStripMenuItem findThisToolStripMenuItem;
         private System.Windows.Forms.TextBox textBox_deviceAddress;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ToolStripMenuItem showIncorrectRepliesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem autoParseReplyToolStripMenuItem;
     }
 }
 

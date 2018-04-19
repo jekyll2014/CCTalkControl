@@ -148,7 +148,7 @@ namespace WindowsFormsApplication1
             // if command
             if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == hostAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) != 0)
             {
-                command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex].ToString().Substring(9, 3));
+                //command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex].ToString().Substring(9, 3));
                 command = Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3));
             }
             // if reply
@@ -731,7 +731,6 @@ namespace WindowsFormsApplication1
                     MessageBox.Show("Error sending to port " + SerialPort1.PortName + ": " + ex.Message);
                 }
                 List<byte> _rxBytes = new List<byte>();
-
                 //copy of request deleted from receive buffer
                 bool dupeDeleted = false;
                 //source/destination address of reply is incorrect
@@ -748,9 +747,7 @@ namespace WindowsFormsApplication1
                 bool _frameOK = false;
                 //ended with timeout
                 bool _timeout = false;
-
                 byte _frameLength = 0;
-
                 DateTime startTime = DateTime.UtcNow;
                 try
                 {
@@ -758,7 +755,7 @@ namespace WindowsFormsApplication1
                     {
                         if (!dupeDeleted)
                         {
-                            while (SerialPort1.BytesToRead != 0 && _rxBytes.Count < _txBytes.Length)
+                            while (SerialPort1.BytesToRead != 0)
                             {
                                 _rxBytes.Add((byte)SerialPort1.ReadByte());
                             }
@@ -805,7 +802,7 @@ namespace WindowsFormsApplication1
                 {
                     MessageBox.Show("Error reading port " + SerialPort1.PortName + ": " + ex.Message);
                 }
-                if (_frameOK)
+                if (_frameOK || showIncorrectRepliesToolStripMenuItem.Checked)
                 {
                     string data = Accessory.ConvertByteArrayToHex(_rxBytes.ToArray());
                     //if command line is the last - add reply to the bottom of the list
@@ -814,6 +811,7 @@ namespace WindowsFormsApplication1
                     else if (listBox_code.Items[listBox_code.SelectedIndex + 1].ToString().Length > 2 && listBox_code.Items[listBox_code.SelectedIndex + 1].ToString().Substring(0, 3) == Accessory.ConvertByteToHex(hostAddress) && listBox_code.Items[listBox_code.SelectedIndex + 1].ToString().Substring(6, 3) == Accessory.ConvertByteToHex(deviceAddress)) listBox_code.Items[listBox_code.SelectedIndex + 1] = data;
                     //or insert new reply next line to command
                     else listBox_code.Items.Insert(listBox_code.SelectedIndex + 1, data);
+                    if (autoParseReplyToolStripMenuItem.Checked) Button_next_Click(this, EventArgs.Empty);
                 }
             }
         }
@@ -961,5 +959,14 @@ namespace WindowsFormsApplication1
             return true;
         }
 
+        private void showIncorrectRepliesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showIncorrectRepliesToolStripMenuItem.Checked = !showIncorrectRepliesToolStripMenuItem.Checked;
+        }
+
+        private void autoParseReplyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            autoParseReplyToolStripMenuItem.Checked = !autoParseReplyToolStripMenuItem.Checked;
+        }
     }
 }
