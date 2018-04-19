@@ -144,71 +144,74 @@ namespace WindowsFormsApplication1
             if (sender == findThisToolStripMenuItem && dataGridView_commands.CurrentCell != null) lineNum = dataGridView_commands.CurrentCell.RowIndex;
             byte command = 0;
 
-            //check if it's a command or reply
-            // if command
-            if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == hostAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) != 0)
+            if (listBox_code.SelectedItem.ToString().Length >= 5)
             {
-                //command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex].ToString().Substring(9, 3));
-                command = Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3));
-            }
-            // if reply
-            else if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == deviceAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) == 0)
-            {
-                if (listBox_code.SelectedIndex > 0) command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex - 1].ToString().Substring(9, 3)); //reply
-                else return;
-            }
-            else return;
-            if (ParseEscPos.FindCommand(0, command, lineNum))
-            {
-                ParseEscPos.FindCommandParameter();
-                dataGridView_commands.CurrentCell = dataGridView_commands.Rows[ParseEscPos.commandDbLineNum].Cells[ParseEscPos.CSVColumns.CommandName];
-                DataRow row = ResultDatabase.NewRow();
-                if (ParseEscPos.itIsReply) row[ResultColumns.Value] = "[REPLY] " + ParseEscPos.commandName;
-                else row[ResultColumns.Value] = "[COMMAND] " + ParseEscPos.commandName;
-                row[ResultColumns.Raw] = ParseEscPos.commandName;
-                if (ParseEscPos.crcFailed) row[ResultColumns.Description] += "!!!CRC FAILED!!! ";
-                if (ParseEscPos.lengthIncorrect) row[ResultColumns.Description] += "!!!FRAME LENGTH INCORRECT!!! ";
-                row[ResultColumns.Description] += ParseEscPos.commandDesc;
-
-                ResultDatabase.Rows.Add(row);
-                for (int i = 0; i < ParseEscPos.commandParamDesc.Count; i++)
+                //check if it's a command or reply
+                // if command
+                if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == hostAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) != 0)
                 {
-                    row = ResultDatabase.NewRow();
-                    row[ResultColumns.Value] = ParseEscPos.commandParamValue[i];
-                    row[ResultColumns.Type] = ParseEscPos.commandParamType[i];
-                    row[ResultColumns.Length] = ParseEscPos.commandParamSizeDefined[i];
-                    row[ResultColumns.Raw] = Accessory.ConvertByteArrayToHex(ParseEscPos.commandParamRAWValue[i].ToArray());
-                    row[ResultColumns.Description] = ParseEscPos.commandParamDesc[i];
+                    //command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex].ToString().Substring(9, 3));
+                    command = Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3));
+                }
+                // if reply
+                else if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == deviceAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) == 0)
+                {
+                    if (listBox_code.SelectedIndex > 0) command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex - 1].ToString().Substring(9, 3)); //reply
+                    else return;
+                }
+                else return;
+                if (ParseEscPos.FindCommand(0, command, lineNum))
+                {
+                    ParseEscPos.FindCommandParameter();
+                    dataGridView_commands.CurrentCell = dataGridView_commands.Rows[ParseEscPos.commandDbLineNum].Cells[ParseEscPos.CSVColumns.CommandName];
+                    DataRow row = ResultDatabase.NewRow();
+                    if (ParseEscPos.itIsReply) row[ResultColumns.Value] = "[REPLY] " + ParseEscPos.commandName;
+                    else row[ResultColumns.Value] = "[COMMAND] " + ParseEscPos.commandName;
+                    row[ResultColumns.Raw] = ParseEscPos.commandName;
+                    if (ParseEscPos.crcFailed) row[ResultColumns.Description] += "!!!CRC FAILED!!! ";
+                    if (ParseEscPos.lengthIncorrect) row[ResultColumns.Description] += "!!!FRAME LENGTH INCORRECT!!! ";
+                    row[ResultColumns.Description] += ParseEscPos.commandDesc;
+
                     ResultDatabase.Rows.Add(row);
-                    if (ParseEscPos.commandParamType[i].ToLower() == ParseEscPos.DataTypes.Bitfield)  //add bitfield display
+                    for (int i = 0; i < ParseEscPos.commandParamDesc.Count; i++)
                     {
-                        byte b = byte.Parse(ParseEscPos.commandParamValue[i]);
-                        for (int i1 = 0; i1 < 8; i1++)
+                        row = ResultDatabase.NewRow();
+                        row[ResultColumns.Value] = ParseEscPos.commandParamValue[i];
+                        row[ResultColumns.Type] = ParseEscPos.commandParamType[i];
+                        row[ResultColumns.Length] = ParseEscPos.commandParamSizeDefined[i];
+                        row[ResultColumns.Raw] = Accessory.ConvertByteArrayToHex(ParseEscPos.commandParamRAWValue[i].ToArray());
+                        row[ResultColumns.Description] = ParseEscPos.commandParamDesc[i];
+                        ResultDatabase.Rows.Add(row);
+                        if (ParseEscPos.commandParamType[i].ToLower() == ParseEscPos.DataTypes.Bitfield)  //add bitfield display
                         {
-                            row = ResultDatabase.NewRow();
-                            row[ResultColumns.Value] = (Accessory.GetBit(b, (byte)i1) ? (byte)1 : (byte)0).ToString();
-                            row[ResultColumns.Type] = "bit" + i1.ToString();
-                            row[ResultColumns.Description] = dataGridView_commands.Rows[ParseEscPos.commandParamDbLineNum[i] + i1 + 1].Cells[ParseEscPos.CSVColumns.CommandDescription].Value;
-                            ResultDatabase.Rows.Add(row);
+                            byte b = byte.Parse(ParseEscPos.commandParamValue[i]);
+                            for (int i1 = 0; i1 < 8; i1++)
+                            {
+                                row = ResultDatabase.NewRow();
+                                row[ResultColumns.Value] = (Accessory.GetBit(b, (byte)i1) ? (byte)1 : (byte)0).ToString();
+                                row[ResultColumns.Type] = "bit" + i1.ToString();
+                                row[ResultColumns.Description] = dataGridView_commands.Rows[ParseEscPos.commandParamDbLineNum[i] + i1 + 1].Cells[ParseEscPos.CSVColumns.CommandDescription].Value;
+                                ResultDatabase.Rows.Add(row);
+                            }
                         }
                     }
                 }
-            }
-            else  //no command found. consider it's a string
-            {
-                DataRow row = ResultDatabase.NewRow();
-                int i = 3;
-                while (!ParseEscPos.FindCommand(0 + i, command) && 0 + i < listBox_code.SelectedItem.ToString().Length) //looking for a non-parseable part end
+                else  //no command found. consider it's a string
                 {
-                    i += 3;
+                    DataRow row = ResultDatabase.NewRow();
+                    int i = 3;
+                    while (!ParseEscPos.FindCommand(0 + i, command) && 0 + i < listBox_code.SelectedItem.ToString().Length) //looking for a non-parseable part end
+                    {
+                        i += 3;
+                    }
+                    ParseEscPos.commandName = "";
+                    row[ResultColumns.Value] += "";
+                    row[ResultColumns.Value] += "\"" + (String)listBox_code.SelectedItem.ToString() + "\"";
+                    dataGridView_commands.CurrentCell = dataGridView_commands.Rows[0].Cells[0];
+                    //dataGridView_commands.FirstDisplayedCell = dataGridView_commands.CurrentCell;
+                    //dataGridView_commands.Refresh();
+                    if (Accessory.PrintableHex(listBox_code.SelectedItem.ToString())) row[ResultColumns.Description] = "\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(Accessory.ConvertHexToByteArray(listBox_code.SelectedItem.ToString())) + "\"";
                 }
-                ParseEscPos.commandName = "";
-                row[ResultColumns.Value] += "";
-                row[ResultColumns.Value] += "\"" + (String)listBox_code.SelectedItem.ToString() + "\"";
-                dataGridView_commands.CurrentCell = dataGridView_commands.Rows[0].Cells[0];
-                //dataGridView_commands.FirstDisplayedCell = dataGridView_commands.CurrentCell;
-                //dataGridView_commands.Refresh();
-                if (Accessory.PrintableHex(listBox_code.SelectedItem.ToString())) row[ResultColumns.Description] = "\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(Accessory.ConvertHexToByteArray(listBox_code.SelectedItem.ToString())) + "\"";
             }
         }
 
@@ -748,6 +751,7 @@ namespace WindowsFormsApplication1
             {
                 try
                 {
+                    SerialPort1.DiscardInBuffer();
                     SerialPort1.Write(_txBytes, 0, _txBytes.Length);
                 }
                 catch (Exception ex)
@@ -779,7 +783,7 @@ namespace WindowsFormsApplication1
                     {
                         if (!dupeDeleted)
                         {
-                            while (SerialPort1.BytesToRead != 0)
+                            if (SerialPort1.BytesToRead != 0)
                             {
                                 _rxBytes.Add((byte)SerialPort1.ReadByte());
                             }
