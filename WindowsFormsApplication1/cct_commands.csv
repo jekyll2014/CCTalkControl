@@ -125,7 +125,7 @@ a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new q
 ;;;;;2;number;;value in cent of the paid amount until the stop;
 83;Request hopper coin value ;;;;;;;Request hopper coin value ;
 ;channel number [1?];1;number;;6;string;;coin code;
-;;;;;2;money;;value in cent and counts;
+;;;;;2;money_invert;;value in cent and counts;
 82;Request indexed hopper dispense count ;;;;;;;Request indexed hopper dispense count ;
 ;channel;1;number;;2;number;;number of the coin supplied from that channel from the reset ;
 79;Purge hopper ;;;;;;;Purge hopper ;
