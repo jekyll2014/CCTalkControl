@@ -547,10 +547,10 @@ namespace WindowsFormsApplication1
         private void Button_newCommand_Click(object sender, EventArgs e)
         {
             //restore 
-            ParseEscPos.CSVColumns.CommandParameterSize = 1;
-            ParseEscPos.CSVColumns.CommandParameterType = 2;
-            ParseEscPos.CSVColumns.CommandParameterValue = 3;
-            ParseEscPos.CSVColumns.CommandDescription = 4;
+            ParseEscPos.CSVColumns.CommandDescription = 1;
+            ParseEscPos.CSVColumns.CommandParameterSize = 2;
+            ParseEscPos.CSVColumns.CommandParameterType = 3;
+            ParseEscPos.CSVColumns.CommandParameterValue = 4;
             ParseEscPos.itIsReply = false;
 
             //dataGridView_commands_CellDoubleClick(this, new DataGridViewCellEventArgs(this.dataGridView_commands.CurrentCell.ColumnIndex, this.dataGridView_commands.CurrentRow.Index));
