@@ -78,6 +78,7 @@ public class ParseEscPos
     {
         public static string String { get; set; } = "string";
         public static string Number { get; set; } = "number";
+        public static string Money { get; set; } = "money";
         public static string Data { get; set; } = "data";
         public static string Bitfield { get; set; } = "bitfield";
     }
@@ -98,7 +99,7 @@ public class ParseEscPos
             CSVColumns.CommandDescription = 1;
             CSVColumns.CommandParameterSize = 2;
             CSVColumns.CommandParameterType = 3;
-            CSVColumns.CommandParameterValue = 4;            
+            CSVColumns.CommandParameterValue = 4;
         }
         else if (sourceData[_pos + 2] == deviceAddress && sourceData[_pos + 3] == 0)
         {
@@ -238,6 +239,22 @@ public class ParseEscPos
                 {
                     _raw = sourceData.GetRange(commandParamPosition, commandParamSize[parameter]);
                     l = RawToNumber(_raw.ToArray());
+                    _val = l.ToString();
+                }
+                else
+                {
+                    errFlag = true;
+                    errMessage = "!!!ERR: Out of data bound!!!";
+                    if (commandParamPosition <= sourceData.Count - 1) _raw = sourceData.GetRange(commandParamPosition, sourceData.Count - 1 - commandParamPosition);
+                }
+            }
+            else if (_prmType == DataTypes.Money)
+            {
+                double l = 0;
+                if (commandParamPosition + commandParamSize[parameter] <= sourceData.Count - 1)
+                {
+                    _raw = sourceData.GetRange(commandParamPosition, commandParamSize[parameter]);
+                    l = RawToMoney(_raw.ToArray());
                     _val = l.ToString();
                 }
                 else
@@ -391,6 +408,16 @@ public class ParseEscPos
         return l;
     }
 
+    public static double RawToMoney(byte[] b)
+    {
+        double l = 0;
+        for (int n = 0; n < b.Length; n++)
+        {
+            l += (b[n] * Math.Pow(256, b.Length - 1 - n));
+        }
+        return l / 100;
+    }
+
     public static string RawToData(byte[] b)
     {
         if (Accessory.PrintableByteArray(b)) return ("\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(b) + "\"");
@@ -426,6 +453,23 @@ public class ParseEscPos
         string str = "";
         for (int i = 0; i < n; i++) str += Accessory.ConvertByteToHex(b[i]);
         return str;
+    }
+
+    public static string MoneyToRaw(string s, byte n)
+    {
+        double d = 0;
+        if (s != "") double.TryParse(s, out d);
+        d = d * 100;
+        byte[] b = new byte[n];
+        for (int i = n - 1; i >= 0; i--)
+        {
+            b[n - 1 - i] += (byte)(d / Math.Pow(256, i));
+            d -= (b[n - 1 - i] * Math.Pow(256, i));
+        }
+        //string str = "";
+        //for (int i = 0; i < n; i++) str += Accessory.ConvertByteToHex(b[i]);
+        //return str;
+        return Accessory.ConvertByteArrayToHex(b);
     }
 
     public static string DataToRaw(string s, byte n)

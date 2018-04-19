@@ -253,8 +253,8 @@
             this.toolStripMenuItem_TimeOut,
             this.toolStripMenuItem_Connect});
             this.COMPortToolStripMenuItem.Name = "COMPortToolStripMenuItem";
-            this.COMPortToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
-            this.COMPortToolStripMenuItem.Text = "COM port";
+            this.COMPortToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
+            this.COMPortToolStripMenuItem.Text = "Connection";
             this.COMPortToolStripMenuItem.Click += new System.EventHandler(this.COMPortToolStripMenuItem_Click);
             // 
             // toolStripComboBox_PortName

@@ -76,7 +76,7 @@ a9;Request address mode ;;;;;;;Request address mode ;
 ;;;;;1;number;;the address of the peripheral device;
 ;;;;;;;32; is set through deep-sw ;
 a4;Enable Hopper ;;;;;;;Enable Hopper ;
-;;1;number;;;;;;
+;magic value (165 to enable);1;number;;;;;;
 ;the hopper is qualified for payments ;;;165;;;;;
 a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new qualification (command 164) or at reset (command 1);
 ;;;;;1;bitfield;;status byte 1;
@@ -125,7 +125,7 @@ a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new q
 ;;;;;2;number;;value in cent of the paid amount until the stop;
 83;Request hopper coin value ;;;;;;;Request hopper coin value ;
 ;channel number [1?];1;number;;6;string;;coin code;
-;;;;;2;number;;value in cent and counts;
+;;;;;2;money;;value in cent and counts;
 82;Request indexed hopper dispense count ;;;;;;;Request indexed hopper dispense count ;
 ;channel;1;number;;2;number;;number of the coin supplied from that channel from the reset ;
 79;Purge hopper ;;;;;;;Purge hopper ;

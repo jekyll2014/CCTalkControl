@@ -394,6 +394,12 @@ namespace WindowsFormsApplication1
                     byte.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = ParseEscPos.NumberToRaw(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString(), n);
                 }
+                else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.Money)
+                {
+                    byte n = 0;
+                    byte.TryParse(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Length].Value.ToString(), out n);
+                    dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = ParseEscPos.MoneyToRaw(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value.ToString(), n);
+                }
                 else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.String)
                 {
                     byte n = 0;
@@ -430,6 +436,12 @@ namespace WindowsFormsApplication1
                 {
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = Accessory.CheckHexString(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString());
                     double l = ParseEscPos.RawToNumber(Accessory.ConvertHexToByteArray(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString()));
+                    dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value = l.ToString();
+                }
+                else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.Money)
+                {
+                    dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value = Accessory.CheckHexString(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString());
+                    double l = ParseEscPos.RawToMoney(Accessory.ConvertHexToByteArray(dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Raw].Value.ToString()));
                     dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Value].Value = l.ToString();
                 }
                 else if (dataGridView_result.Rows[dataGridView_result.CurrentCell.RowIndex].Cells[ResultColumns.Type].Value.ToString() == ParseEscPos.DataTypes.Data)
@@ -494,11 +506,19 @@ namespace WindowsFormsApplication1
         private void Button_remove_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < listBox_code.Items.Count; i++)
-                if (listBox_code.Items[i].ToString().StartsWith("06 "))
+            {
+                byte[] _txBytes = Accessory.ConvertHexToByteArray(listBox_code.SelectedItem.ToString());
+                byte deviceAddress = 0;
+                byte hostAddress = 0;
+                byte.TryParse(textBox_deviceAddress.Text, out deviceAddress);
+                byte.TryParse(textBox_hostAddress.Text, out hostAddress);
+                //if (listBox_code.Items[i].ToString().StartsWith("06 "))
+                if (_txBytes.Length >= 5 && _txBytes[0] == deviceAddress && _txBytes[2] == hostAddress)
                 {
                     listBox_code.Items.RemoveAt(i);
                     i--;
                 }
+            }
         }
 
         private void Button_clear_Click(object sender, EventArgs e)
@@ -553,7 +573,6 @@ namespace WindowsFormsApplication1
             ParseEscPos.CSVColumns.CommandParameterValue = 4;
             ParseEscPos.itIsReply = false;
 
-            //dataGridView_commands_CellDoubleClick(this, new DataGridViewCellEventArgs(this.dataGridView_commands.CurrentCell.ColumnIndex, this.dataGridView_commands.CurrentRow.Index));
             if (dataGridView_commands.Rows[dataGridView_commands.CurrentCell.RowIndex].Cells[ParseEscPos.CSVColumns.CommandName].Value.ToString() != "")
             {
                 int currentRow = dataGridView_commands.CurrentCell.RowIndex;
@@ -701,7 +720,7 @@ namespace WindowsFormsApplication1
             byte.TryParse(textBox_hostAddress.Text, out hostAddress);
 
 
-            if (_txBytes[0] == deviceAddress && _txBytes[2] == hostAddress)
+            if (_txBytes.Length >= 5 && _txBytes[0] == deviceAddress && _txBytes[2] == hostAddress)
             {
                 try
                 {
@@ -805,9 +824,9 @@ namespace WindowsFormsApplication1
             for (int i = listBox_code.SelectedIndex; i < listBox_code.Items.Count; i++)
             {
                 listBox_code.SelectedIndex = i;
-                if (listBox_code.SelectedItem.ToString().Length > 2) //check minimum packet length
+                //if (listBox_code.SelectedItem.ToString().Length/3 >= 5) //check minimum packet length
                 {
-                    if (listBox_code.SelectedItem.ToString().Substring(0, 2) == textBox_hostAddress.Text && listBox_code.SelectedItem.ToString().Substring(3 * 3, 2) == textBox_deviceAddress.Text) //if it's a command
+                    //if (listBox_code.SelectedItem.ToString().Substring(0, 2) == textBox_hostAddress.Text && listBox_code.SelectedItem.ToString().Substring(3 * 3, 2) == textBox_deviceAddress.Text) //if it's a command
                     {
                         Button_Send_Click(button_SendAll, EventArgs.Empty);
                     }
@@ -922,7 +941,7 @@ namespace WindowsFormsApplication1
 
         private void COMPortToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(toolStripComboBox_PortName.Enabled) SerialPopulate();
+            if (toolStripComboBox_PortName.Enabled) SerialPopulate();
         }
 
         public bool ArrayEqual(byte[] a1, byte[] b1)
