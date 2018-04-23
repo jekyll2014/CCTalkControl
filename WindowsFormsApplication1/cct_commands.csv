@@ -1,153 +1,984 @@
 Command (HEX);Command description;Command parameter length (DEC);Command parameter type;Command parameter value (DEC);Reply parameter length (DEC);Reply parameter type;Reply parameter value (DEC);Reply description;Comment
-fe;Simple poll (ACK reply if successful);;;;;;;Simple poll (ACK reply if successful);
-fd;Address poll ;;;;;;;Address poll ;
-;;;;;1;number;;device address;
-f6;Request manufacturer ID;;;;;;;Request manufacturer ID;
-;;;;;?;string;;device manufacturer string;
-f5;Request equipment category ID ;;;;;;;Request equipment category ID ;
-;;;;;?;string;;device type string;
-f4;Request product code ;;;;;;;Request product code ;
-;;;;;?;string;;device product code;
-f2;Request serial number ;;;;;;;Request serial number ;
-;;;;;3;number;;device serial number;
-f1;Request software revision ;;;;;;;Request software revision ;
-;;;;;?;string;;device software version;
-d9;Request Payout Hi-Lo status ;;;;;;;Request Payout Hi-Lo status ;
-;;;;;1;bitfield;;status and the presence of sensors of minimum and maximum ;
-;;;;;;;;Bit0=1 Coins do NOT overtake the minimum sensor (if=0 they overtake) ;
-;;;;;;;;Bit1=1 Coins do NOT overtake the maximum sensor (if=0 they overtake) ;
-;;;;;;;;Bit2=1 Minimum sensor present (if=0 absent) ;
-;;;;;;;;Bit3=1 Maximum sensor present (if= absent ) ;
-;;;;;;;;Bit4;
-;;;;;;;;Bit5;
-;;;;;;;;Bit6;
-;;;;;;;;Bit7;
-ec;Read Opto States ;;;;;;;Read Opto States ;
-;;;;;1;bitfield;;status Byte of optical sensors ;
-;;;;;;;;Bit 0: M1 ;
-;;;;;;;;Bit 1: M2 ;
-;;;;;;;;Bit 2: M3 return into hopper ;
-;;;;;;;;Bit 3: LB5 right storage position ;
-;;;;;;;;Bit 4: LB4 left storage position ;
-;;;;;;;;Bit 5: LB2 supply exit coin ;
-;;;;;;;;Bit 6: LB3 coin recover ;
-;;;;;;;;Bit 7: NU ;
-e7;Modify inhibit mask ;;;;;;;Modify inhibit mask ;
-;inhibit mask byte 1;1;bitfield;;;;;ACK reply if successful;
-;Bit0=1 Enable channel 1;;;;;;;;
-;Bit1=1 Enable channel 2;;;;;;;;
-;Bit2=1 Enable channel 3;;;;;;;;
-;Bit3=1 Enable channel 4;;;;;;;;
-;Bit4=1 Enable channel 5;;;;;;;;
-;Bit5=1 Enable channel 6;;;;;;;;
-;Bit6=1 Enable channel 7;;;;;;;;
-;Bit7=1 Enable channel 8;;;;;;;;
-;inhibit mask byte 2;1;bitfield;;;;;;
-;Bit0=1 Enable channel 9;;;;;;;;
-;Bit1=1 Enable channel 10;;;;;;;;
-;Bit2=1 Enable channel 11;;;;;;;;
-;Bit3=1 Enable channel 12;;;;;;;;
-;Bit4=1 Enable channel 13;;;;;;;;
-;Bit5=1 Enable channel 14;;;;;;;;
-;Bit6=1 Enable channel 15;;;;;;;;
-;Bit7=1 Enable channel 16;;;;;;;;
-e6;Request inhibit mask;;;;;;;Request inhibit mask;
-;;;;;1;bitfield;;inhibit mask, byte 1;
-;;;;;;;;Bit0=1 Enable channel 1;
-;;;;;;;;Bit1=1 Enable channel 2;
-;;;;;;;;Bit2=1 Enable channel 3;
-;;;;;;;;Bit3=1 Enable channel 4;
-;;;;;;;;Bit4=1 Enable channel 5;
-;;;;;;;;Bit5=1 Enable channel 6;
-;;;;;;;;Bit6=1 Enable channel 7;
-;;;;;;;;Bit7=1 Enable channel 8;
-;;;;;1;bitfield;;inhibit mask, byte 2;
-;;;;;;;;Bit0=1 Enable channel 9;
-;;;;;;;;Bit1=1 Enable channel 10;
-;;;;;;;;Bit2=1 Enable channel 11;
-;;;;;;;;Bit3=1 Enable channel 12;
-;;;;;;;;Bit4=1 Enable channel 13;
-;;;;;;;;Bit5=1 Enable channel 14;
-;;;;;;;;Bit6=1 Enable channel 15;
-;;;;;;;;Bit7=1 Enable channel 16;
-c5;Calculate ROM checksum ;;;;;;;Calculate ROM checksum ;
-;;;;;3;number;;;
-a9;Request address mode ;;;;;;;Request address mode ;
-;;;;;1;number;;the address of the peripheral device;
-;;;;;;;32; is set through deep-sw ;
-a4;Enable Hopper ;;;;;;;Enable Hopper ;
-;magic value (165 to enable);1;number;;;;;;
-;the hopper is qualified for payments ;;;165;;;;;
-a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new qualification (command 164) or at reset (command 1);
-;;;;;1;bitfield;;status byte 1;
-;;;;;;;;Bit0=1 Stopped hopper for current and restarted after release.;
-;;;;;;;;Bit1=1 Timeout during supply (lack of coins or blocked engine);
-;;;;;;;;Bit2=1 Engine has made a release operation during the last supply;
-;;;;;;;;Bit3=1 Set bit=1 at PowerOn and reset at firs valid command;
-;;;;;;;;Bit4=1 Hopper disabled (disable with command 165);
-;;;;;;;;Bit5=1 Hopper stopped from command 132 ("Emergency stop value");
-;;;;;;;;Bit6= 1 Hopper in duty / bit=0 hopper in IDLE (waiting for commands);
-;;;;;;;;Bit7= 1 Problem during coin recovery. Coin not correctly recovered.;
-;;;;;1;bitfield;;status byte 2;
-;;;;;;;;Bit0=1 Inductive sensors faulty coins ;
-;;;;;;;;Bit1=1 Data Checksum wrong coins ;
-;;;;;;;;Bit2=1 Faulty Hall sensor ;
-;;;;;;;;Bit3=1 Blocked Hopper for blocked photocells LB2,LB3, M1,M2,M3. ;
-;;;;;;;;Bit4=1 Blocked Hopper for current limit overtaken after three attempts. ;
-;;;;;;;;Bit5=1 Blocked Hopper for polling-timeout during "purge hopper" ;
-;;;;;;;;Bit6= NU ;
-;;;;;;;;Bit7= NU ;
-86;Dispense hopper value [amount mode];;;;;;;Dispense hopper value [amount mode];
-;default value [0];8;number;;;;;;
-;;;;0;;;;;
-;value;2;number;;;;;;
-86;Dispense hopper value [channel mode];;;;;;;Dispense hopper value [channel mode];
-;default value [0];8;number;;;;;;
-;;;;0;;;;;
-;Channel 1 value;1;number;;;;;;
-;Channel 2 value;1;number;;;;;;
-;Channel 3 value;1;number;;;;;;
-;Channel 4 value;1;number;;;;;;
-;Channel 5 value;1;number;;;;;;
-;Channel 6 value;1;number;;;;;;
-;Channel 7 value;1;number;;;;;;
-;Channel 8 value;1;number;;;;;;
-85;Request hopper polling value;;;;;;;Request hopper polling value;
-;;;;;1;number;;Event Counter ;
-;;;;;2;number;;the value in cent of the value amount that has to be supplied;
-;;;;;2;number;;the value in cent of the supplied amount;
-;;;;;1;number;;status of the hopper ;
-;;;;;;;0;idle and last start of the engine has been for command 134 ;
-;;;;;;;7;payment in progress, stable engine ;
-;;;;;;;8;payment in progress, forward engine ;
-;;;;;;;9;payment in progress, backward engine ;
-84;Emergency stop value ;;;;;;;Emergency stop value ;
-;;;;;2;number;;value in cent of the paid amount until the stop;
-83;Request hopper coin value ;;;;;;;Request hopper coin value ;
-;channel number [1?];1;number;;6;string;;coin code;
-;;;;;2;money_invert;;value in cent and counts;
-82;Request indexed hopper dispense count ;;;;;;;Request indexed hopper dispense count ;
-;channel;1;number;;2;number;;number of the coin supplied from that channel from the reset ;
-79;Purge hopper ;;;;;;;Purge hopper ;
-1f;Reprogram pocket ;;;;;;;Reprogram pocket ;
-;channel number for left pocket;1;number;;1;number;;New channel number for left pocket;
-;channel number for right pocket;1;number;;1;number;;New channel number for right pocket;
-1e;Request pocket status ;;;;;;;Request pocket status ;
-;;;;;1;number;;number of channel programmed in left pocket ;
-;;;;;1;number;;number of channel programmed in right pocket;
-;;;;;2;number;;coin value programmed in left pocket;
-;;;;;2;number;;coin value programmed in right pocket ;
-;;;;;1;bitfield;;pockets statuses;
-;;;;;;;;Bit0=1 indicates that the left pocket is full ;
-;;;;;;;;Bit1=1 indicates that the right pocket is full ;
-;;;;;;;;Bit2;
-;;;;;;;;Bit3;
-;;;;;;;;Bit4;
-;;;;;;;;Bit5;
-;;;;;;;;Bit6;
-;;;;;;;;Bit7;
-04;Request Comms Revision ;;;;;;;Request Comms Revision ;
+FF;Factory set-up and test;;;;;;;Factory set-up and test [ACK];255
+;;?;data;;?;data;;;
+FE;Simple poll;;;;;;;Simple poll [ACK];254
+FD;Address poll (to 0 address);;;;;;;Address poll;253
+;;;;;1;number;;variable delay;
+;;;;;1;number;;slave address byte;
+FC;Address clash;;;;;;;Address clash;252
+;;;;;1;number;;variable delay;
+;;;;;1;number;;slave address byte;
+FB;Address change;;;;;;;Address change [ACK];251
+;new address;1;number;;;;;;
+FA;Address random;;;;;;;Address random [ACK];250
+F9;Request polling priority;;;;;;;Request polling priority;249
+;;;;;1;number;;units;
+;;;;;;;0;0 - special case, see below;
+;;;;;;;1;1 - ms;
+;;;;;;;2;2 - x10 ms;
+;;;;;;;3;3 - seconds;
+;;;;;;;4;4 - minutes;
+;;;;;;;5;5 - hours;
+;;;;;;;6;6 - days;
+;;;;;;;7;7 - weeks;
+;;;;;;;8;8 - months;
+;;;;;;;9;9 - years;
+;;;;;1;number;;value;
+;;;;;;;255;If units = 0 device uses a hardware REQUEST POLL line;
+F8;Request status;;;;;;;Request status;248
+;;;;;?;data;;status;
+F7;Request variable set;;;;;;;Request variable set;247
+;;;;;?;data;;variable;
+F6;Request manufacturer id;;;;;;;;246
+;;;;;?;string;;manufacturer id;
+F5;Request equipment category id;;;;;;;;245
+;;;;;?;string;;manufacturer id;
+F4;Request product code;;;;;;;;244
+;;;;;?;string;;manufacturer id;
+F3;Request database version;;;;;;;;243
+;;;;;1;number;;manufacturer id;
+F2;Request serial number;;;;;;;;242
+;;;;;3;number;;serial number [LSB..MSB];
+F1;Request software revision;;;;;;;;241
+;;;;;?;string;;manufacturer id;
+F0;Test solenoids;;;;;;;Test solenoids [ACK];240
+;;1;bitfield;;;;;;
+;;;;Bit 0;;;;;
+;;;;Bit 1;;;;;
+;;;;Bit 2;;;;;
+;;;;Bit 3;;;;;
+;;;;Bit 4;;;;;
+;;;;Bit 5;;;;;
+;;;;Bit 6;;;;;
+;;;;Bit 7;;;;;
+EF;Operate motors;;;;;;;Operate motors [ACK];239
+;;1;bitfield;;;;;;
+;;;;Bit 0;;;;;
+;;;;Bit 1;;;;;
+;;;;Bit 2;;;;;
+;;;;Bit 3;;;;;
+;;;;Bit 4;;;;;
+;;;;Bit 5;;;;;
+;;;;Bit 6;;;;;
+;;;;Bit 7;;;;;
+EE;Test output lines;;;;;;;Test output lines [ACK];238
+;;1;bitfield;;;;;;
+;;;;Bit 0;;;;;
+;;;;Bit 1;;;;;
+;;;;Bit 2;;;;;
+;;;;Bit 3;;;;;
+;;;;Bit 4;;;;;
+;;;;Bit 5;;;;;
+;;;;Bit 6;;;;;
+;;;;Bit 7;;;;;
+ED;Read input lines;;;;;;;Read input lines;237
+;;;;;?;data;;;
+EC;Read opto states;;;;;;;Read opto states;236
+;;;;;1;bitfield;;;
+;;;;;;;Bit 0;;
+;;;;;;;Bit 1;;
+;;;;;;;Bit 2;;
+;;;;;;;Bit 3;;
+;;;;;;;Bit 4;;
+;;;;;;;Bit 5;;
+;;;;;;;Bit 6;;
+;;;;;;;Bit 7;;
+EB;Read DH public key;;;;;;;Read DH public key;235
+;mode;1;n;;?;data;;status or key data;
+;request status;;;0;;;;;
+;request public key;;;1;;;;;
+EA;Send DH public key;;;;;;;Send DH public key [ACK];234
+;;?;data;key data;;;;;
+E9;Latch output lines;;;;;;;Latch output lines [ACK];233
+;;1;bitfield;;;;;;
+;;;;Bit 0;;;;;
+;;;;Bit 1;;;;;
+;;;;Bit 2;;;;;
+;;;;Bit 3;;;;;
+;;;;Bit 4;;;;;
+;;;;Bit 5;;;;;
+;;;;Bit 6;;;;;
+;;;;Bit 7;;;;;
+E8;Perform self-check;;;;;;;Perform self-check;232
+;;;;;?;data;;fault code;
+E7;Modify inhibit status;;;;;;;Modify inhibit status [ACK];231
+;;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;;1;bitfield;;;;;;
+;Bit 8;;;;;;;;
+;Bit 9;;;;;;;;
+;Bit 10;;;;;;;;
+;Bit 11;;;;;;;;
+;Bit 12;;;;;;;;
+;Bit 13;;;;;;;;
+;Bit 14;;;;;;;;
+;Bit 15;;;;;;;;
+E6;Request inhibit status;;;;;;;Request inhibit status;230
+;;;;;1;bitfield;;;
+;;;;;;;;Bit 0;
+;;;;;;;;Bit 1;
+;;;;;;;;Bit 2;
+;;;;;;;;Bit 3;
+;;;;;;;;Bit 4;
+;;;;;;;;Bit 5;
+;;;;;;;;Bit 6;
+;;;;;;;;Bit 7;
+;;;;;1;bitfield;;;
+;;;;;;;;Bit 8;
+;;;;;;;;Bit 9;
+;;;;;;;;Bit 10;
+;;;;;;;;Bit 11;
+;;;;;;;;Bit 12;
+;;;;;;;;Bit 13;
+;;;;;;;;Bit 14;
+;;;;;;;;Bit 15;
+E5;Read buffered credit or error codes;;;;;;;;229
+;;;;;1;number;;event counter;
+;;;;;?;data;;[result 1A][result 1B]..[result nA][result nB];
+E4;Modify master inhibit status;;;;;;;Modify master inhibit status [ACK];228
+;master inhibit status;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+E3;Request master inhibit status;;;;;;;Request master inhibit status;227
+;;;;;1;bitfield;;;
+;;;;;;;;Bit 8;
+;;;;;;;;Bit 9;
+;;;;;;;;Bit 10;
+;;;;;;;;Bit 11;
+;;;;;;;;Bit 12;
+;;;;;;;;Bit 13;
+;;;;;;;;Bit 14;
+;;;;;;;;Bit 15;
+E2;Request insertion counter;;;;;;;Request insertion counter;226
+;;;;;3;number;;Count [LSB]..[MSB];
+E1;Request accept counter;;;;;;;Request accept counter;225
+;;;;;3;number;;Count [LSB]..[MSB];
+E0;Request encrypted product id;;;;;;;Request encrypted product id;224
+;Challenge 1;16;data;;?;data;;[ CRC checksum LSB ] [ manuf 1 ] [ manuf 2 ] [ manuf 3 ]
+[ product 1 ] [ product 2 ] [ product 3 ] [ product 4 ]
+[ product 5 ] [ product 6 ] [ product 7 ] [ product 8 ]
+[ serial 1 ] [ serial 2 ] [ serial 3 ] [ challenge 1 ]
+[ revision 1 ] [ revision 2 ] [ revision 3 ] [ revision 4 ]
+[ revision 5 ] [ revision 6 ] [ revision 7 ] [ revision 8 ]
+[ revision 9 ] [ revision 10 ] [ revision 11 ] [ revision 12 ]
+[ serial 4 ] [ random ] [ challenge 2 ] [ CRC checksum MSB ];
+;Challenge 2;16;data;;;;;;
+DF;Modify encrypted inhibit and override registers;;;;;;;Modify encrypted inhibit and override registers [ACK];223
+;inhibit 1;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;Inhibit 2;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;Inhibit 3;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;Inhibit 4;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;cash value 1;4;number;;;;;;
+;cash value 2;4;number;;;;;;
+;cash value 3;4;number;;;;;;
+;cash value 4;4;number;;;;;;
+;coin count 1;4;number;;;;;;
+;coin count 2;4;number;;;;;;
+;coin count 3;4;number;;;;;;
+;coin count 4;4;number;;;;;;
+;sorter override mask;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+DE;Modify sorter override status;;;;;;;Modify sorter override status [ACK];222
+;sorter override mask;1;bitfield;;;;;;
+;Bit 0: Sorter Path 1;;;;;;;;
+;Bit 1: Sorter Path 2;;;;;;;;
+;Bit 2: Sorter Path 3;;;;;;;;
+;Bit 3: Sorter Path 4;;;;;;;;
+;Bit 4: Sorter Path 5;;;;;;;;
+;Bit 5: Sorter Path 6;;;;;;;;
+;Bit 6: Sorter Path 7;;;;;;;;
+;Bit 7: Sorter Path 8;;;;;;;;
+DD;Request sorter override status;;;;;;;Request sorter override status;221
+;;;;;1;bitfield;;;
+;;;;;;;;Bit 0: Sorter Path 1;
+;;;;;;;;Bit 1: Sorter Path 2;
+;;;;;;;;Bit 2: Sorter Path 3;
+;;;;;;;;Bit 3: Sorter Path 4;
+;;;;;;;;Bit 4: Sorter Path 5;
+;;;;;;;;Bit 5: Sorter Path 6;
+;;;;;;;;Bit 6: Sorter Path 7;
+;;;;;;;;Bit 7: Sorter Path 8;
+DC;ACMI encrypted data;;;;;;;;220
+;data;?;data;;?;data;;data;
+DB;Enter new PIN number;;;;;;;Enter new PIN number [ACK];219
+;new pin [1..4];4;number;;;;;;
+DA;Enter PIN number;;;;;;;Enter PIN number [ACK];218
+;new pin [1..4];4;number;;;;;;
+D9;Request payout high / low status;;;;;;;Request payout high / low status;217
+;hopper no.;?;number;;1;bitfield;;status;
+;;;;;;;;Bit 0: Low level sensor status;
+;;;;;;;;Bit 1: High level sensor status;
+;;;;;;;;Bit 2: <reserved>;
+;;;;;;;;Bit 3: <reserved>;
+;;;;;;;;Bit 4: Low level sensor support;
+;;;;;;;;Bit 5: High level sensor support;
+;;;;;;;;Bit 6: <reserved>;
+;;;;;;;;Bit 7: <reserved>;
+D8;Request data storage availability;;;;;;;;216
+;memory type;1;number;;;;;;
+;volatile ( lost on reset );;;0;;;;;
+;volatile ( lost on power-down );;;1;;;;;
+;permanent ( limited use );;;2;;;;;
+;permanent ( unlimited use );;;3;;;;;
+;read blocks;1;number;;;;;;
+;read bytes per block;1;number;;;;;;
+;write blocks;1;number;;;;;;
+;write bytes per block;1;number;;;;;;
+D7;Read data block;;;;;;;;215
+;block number;1;number;;1;number;;variable>;
+D6;Write data block;;;;;;;Write data block [ACK];214
+;block number;1;number;;;;;;
+;variable;1;number;;;;;;
+D5;Request option flags;;;;;;;;213
+;;;;;1;bitfield;;status;
+;;;;;;;;Bit 0;
+;;;;;;;;Bit 1;
+;;;;;;;;Bit 2;
+;;;;;;;;Bit 3;
+;;;;;;;;Bit 4;
+;;;;;;;;Bit 5;
+;;;;;;;;Bit 6;
+;;;;;;;;Bit 7;
+D4;Request coin position;;;;;;;Request coin position;212
+;credit code;1;number;;1;bitfield;;Position mask 1;
+;;;;;;;;Bit 0;
+;;;;;;;;Bit 1;
+;;;;;;;;Bit 2;
+;;;;;;;;Bit 3;
+;;;;;;;;Bit 4;
+;;;;;;;;Bit 5;
+;;;;;;;;Bit 6;
+;;;;;;;;Bit 7;
+;;;;;1;bitfield;;Position mask 2;
+;;;;;;;;Bit 0;
+;;;;;;;;Bit 1;
+;;;;;;;;Bit 2;
+;;;;;;;;Bit 3;
+;;;;;;;;Bit 4;
+;;;;;;;;Bit 5;
+;;;;;;;;Bit 6;
+;;;;;;;;Bit 7;
+D3;Power management control;;;;;;;Power management control [ACK];211
+;power option;1;number;;;;;;
+;normal operation ( automatic power switching if supported );;;0;;;;;
+;switch to low power mode;;;1;;;;;
+;switch to full power mode;;;2;;;;;
+;shutdown;;;3;;;;;
+D2;Modify sorter paths;;;;;;;Modify sorter paths [ACK];210
+;coin position;1;number;;;;;;
+;path;1;number;;;;;;
+D1;Request sorter paths;;;;;;;Request sorter paths;209
+;coin position;1;number;;1;number;;path;
+D0;Modify payout absolute count;;;;;;;Modify payout absolute count [ACK];208
+;no. of coins;2;number;;;;;;
+CF;Request payout absolute count;;;;;;;;207
+;hopper no.;?;number;;2;number;;no. of coins;
+CE;;;;;;;;;206
+CD;;;;;;;;;205
+CC;Meter control;;;;;;;Meter control [ACK];204
+;mode;1;number;;?;number;;Count [LSB]..[MSB];
+;set meter to value;;;0;;;;;
+;increment meter;;;1;;;;;
+;decrement meter;;;2;;;;;
+;reset meter;;;3;;;;;
+;read meter;;;4;;;;;
+;count;?;number;;;;;;
+CB;Display control;;;;;;;Display control [ACK];203
+;mode;1;number;;?;data;;[ characters ] [ lines ];
+;send character ( append );;;0;;;;;
+;clear display;;;1;;;;;
+;send control code;;;2;;;;;
+;send string ( append );;;3;;;;;
+;request display size;;;4;;;;;
+;Display string;?;string;;;;;;
+CA;Teach mode control;;;;;;;Teach mode control [ACK];202
+;position;1;number;;;;;;
+;orientation;?;number;;;;;;
+C9;Request teach status;;;;;;;Request teach status;201
+;mode;1;number;;1;number;;no. of coins / bills entered;
+;default;;;0;1;number;;status code;
+;abort teach operation;;;1;;;252;teach aborted;
+;;;;;;;253;teach error;
+;;;;;;;254;teaching in progress ( busy );
+;;;;;;;255;teach completed;
+C8;ACMI unencrypted product id;;;;;;;ACMI unencrypted product id;200
+;max DH key length;1;number;;?;data;;[ max DH key length ] [ max baud rate ]
+[ frm rev 1 ] [ frm rev 2 ] [ frm rev 3 ] [ frm rev 4 ]
+[ frm rev 5 ] [ frm rev 6 ] [ frm rev 7 ] [ frm rev 8 ]
+[ ACMI revision 1 ] [ ACMI revision 2 ]
+[ serial 1 ] [ serial 2 ] [ serial 3 ] [ serial 4 ]
+[ manuf 1 ] [ manuf 2 ] [ manuf 3 ] [ manuf 4 ]
+[ manuf 5 ] [ manuf 6 ] [ manuf 7 ] [ manuf 8 ]
+[ manuf 9 ] [ manuf 10 ] [ manuf 11 ] [ manuf 12 ]
+[ manuf 13 ] [ manuf 14 ] [ manuf 15 ] [ manuf 16 ]
+[ prod code 1 ] [ prod code 2 ] [ prod code 3 ] [ prod code 4 ]
+[ prod code 5 ] [ prod code 6 ] [ prod code 7 ] [ prod code 8 ]
+[ DH counter LSB ] [ DH counter MSB ];
+;128 bits;;;1;;;;;
+;256 bits;;;2;;;;;
+;512 bits;;;3;;;;;
+;1024 bits;;;4;;;;;
+;2048 bits;;;5;;;;;
+;4096 bits;;;6;;;;;
+C7;Configuration to EEPROM;;;;;;;Configuration to EEPROM [ACK];199
+C6;Counters to EEPROM;;;;;;;Counters to EEPROM [ACK];198
+C5;Calculate ROM checksum;;;;;;;Calculate ROM checksum;197
+;;;;;4;number;;checksum;
+C4;Request creation date;;;;;;;Request creation date;196
+;;;;;2;number;;date code;
+C3;Request last modification date;;;;;;;Request last modification date;195
+;;;;;2;number;;date code;
+C2;Request reject counter;;;;;;;Request reject counter;194
+;;;;;3;number;;Count [LSB]..[MSB];
+C1;Request fraud counter;;;;;;;;193
+;;;;;3;number;;Count [LSB]..[MSB];
+C0;Request build code;;;;;;;Request build code;192
+;;;;;?;string;;build code;
+BF;Keypad control;;;;;;;Keypad control;191
+;keypad code;1;number;;1;number;;cursor position;
+;return current display message;;;0;;;0;cursor off or not used;
+;;;;;?;data;;chars;
+BE;;;;;;;;;190
+BD;Modify default sorter path;;;;;;;Modify default sorter path [ACK];189
+;default path;1;number;;;;;;
+BC;Request default sorter path;;;;;;;Request default sorter path;188
+;;;;;1;number;;default path;
+BB;Modify payout capacity;;;;;;;Modify payout capacity [ACK];187
+;no. of coins;2;number;;;;;;
+BA;Request payout capacity;;;;;;;Request payout capacity;186
+;;;;;2;number;;no. of coins;
+B9;Modify coin id;;;;;;;Modify coin id [ACK];185
+;coin position;1;number;;;;;;
+;Description string;?;string;;;;;;
+B8;Request coin id;;;;;;;Request coin id;184
+;coin position;1;number;;?;string;;Description string;
+B7;Upload window data;;;;;;;Upload window data [ACK];183
+;mode;1;number;;;;;;
+;program coin;;;0;;;;;
+;modify credit code;;;1;;;;;
+;delete coin;;;2;;;;;
+;program token;;;3;;;;;
+;delete token;;;4;;;;;
+;coin/token position;1;number;;;;;;
+;credit code;?;data;;;;;;
+B6;Download calibration info;;;;;;;Download calibration info;182
+;;;;;?;data;;data;
+B5;Modify security setting;;;;;;;Modify security setting [ACK];181
+;coin / bill position;1;number;;;;;;
+;security setting
+0 - default setting ( nominal performance )
+1 to 7 - gradually increase fraud rejection ( 7 steps )
+255 to 249 - gradually increase true acceptance ( 7 steps )
+8 to 248 - undefined;1;number;;;;;;
+B4;Request security setting;;;;;;;Request security setting;180
+;coin / bill position;1;number;;1;number;;security setting
+0 - default setting ( nominal performance )
+1 to 7 - gradually increase fraud rejection ( 7 steps )
+255 to 249 - gradually increase true acceptance ( 7 steps )
+8 to 248 - undefined;
+B3;Modify bank select;;;;;;;Modify bank select [ACK];179
+;bank no.;1;number;;;;;;
+;default bank;;;0;;;;;
+B2;Request bank select;;;;;;;Request bank select;178
+;;;;;1;number;;bank no.;
+;;;;;;;0;default bank;
+B1;Handheld function;;;;;;;Handheld function;177
+;Mode / function;1;number;;?;data;;variable>;
+;variable>;?;data;;;;;;
+B0;Request alarm counter;;;;;;;Request alarm counter;176
+;;;;;1;number;;alarm count;
+AF;Modify payout float;;;;;;;Modify payout float [ACK];175
+;no. of coins;2;number;;;;;;
+AE;Request payout float;;;;;;;Request payout float;174
+;hopper no.;?;number;;2;number;;no. of coins;
+AD;Request thermistor reading;;;;;;;;173
+;;;;;1;number;;thermistor value [temperature = (((thermistor value - 128) / 102 * 45) + 25) øC];
+AC;Emergency stop;;;;;;;Emergency stop;172
+;;;;;1;number;;payout coins remaining;
+AB;Request hopper coin;;;;;;;Request hopper coin;171
+;;;;;?;string;;coin name;
+AA;Request base year;;;;;;;Request base year;170
+;;;;;4;string;;base year;
+A9;Request address mode;;;;;;;Request address mode;169
+;;;;;1;bitfield;;address mode;
+;;;;;;;;B0 - Address is stored in Flash / ROM;
+;;;;;;;;B1 - Address is stored in RAM;
+;;;;;;;;B2 - Address is stored in EEPROM or equivalent;
+;;;;;;;;B3 - Address selection via interface connector;
+;;;;;;;;B4 - Address selection via PCB links;
+;;;;;;;;B5 - Address selection via switch;
+;;;;;;;;B6 - Address may be changed with serial commands ( volatile );
+;;;;;;;;B7 - Address may be changed with serial commands ( non-volatile );
+A8;Request hopper dispense count;;;;;;;Request hopper dispense count;168
+;;;;;1;number;;Count [LSB]..[MSB];
+A7;Dispense hopper coins;;;;;;;Dispense hopper coins [ACK];167
+;variable;0;data;;?;number;;event counter;
+;no. of coins;1;number;;;;;;
+A6;Request hopper status;;;;1;number;;Request hopper status;166
+;;;;;1;number;;event counter;
+;;;;;1;number;;payout coins remaining;
+;;;;;1;number;;last payout : coins paid;
+;;;;;;;;last payout : coins unpaid;
+A5;Modify variable set;;;;;;;Modify variable set [ACK];165
+;variable;?;data;;;;;;
+A4;Enable hopper;;;;;;;Enable hopper [ACK];164
+;enable code;1;number;;;;;;
+;magic number;;;165;;;;;
+A3;Test hopper;;;;;;;Test hopper;163
+;;;;;1;bitfield;;hopper status register 1;
+;;;;;;;;Bit 0 - Absolute maximum current exceeded;
+;;;;;;;;Bit 1 - Payout timeout occurred;
+;;;;;;;;Bit 2 - Motor reversed during last payout to clear a jam;
+;;;;;;;;Bit 3 - Opto fraud attempt, path blocked during idle;
+;;;;;;;;Bit 4 - Opto fraud attempt, short-circuit during idle;
+;;;;;;;;Bit 5 - Opto blocked permanently during payout;
+;;;;;;;;Bit 6 - Power-up detected;
+;;;;;;;;Bit 7 - Payout disabled;
+;;;;;?;data;;hopper status register 2, 3;
+A2;Modify inhibit and override registers;;;;;;;Modify inhibit and override registers [ACK];162
+;current : inhibit mask 1;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;current : inhibit mask 2;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;current : sorter override bit mask;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;next : inhibit mask 1;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;next : inhibit mask 2;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;next : sorter override bit mask;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+A1;Pump RNG;;;;;;;Pump RNG [ACK];161
+;variable;?;data;;;;;;
+A0;Request cipher key;;;;;;;Request cipher key;160
+;;;;;?;data;;variable;
+9F;Read buffered bill events;;;;;;;Read buffered bill events;159
+;;;;;1;number;;event counter;
+;;;;;?;data;;[result 1A][result 1B]..[result nA][result nB];
+9E;Modify bill id;;;;;;;Modify bill id [ACK];158
+;bill type;1;number;;;;;;
+;bill id string;?;string;;;;;;
+9D;Request bill id;;;;;;;Request bill id;157
+;bill type;1;number;;?;string;;bill id string;
+9C;Request country scaling factor;;;;;;;Request country scaling factor;156
+;country;2;string;;2;number;;scaling factor;
+;;;;;1;number;;decimal places;
+9B;Request bill position;;;;;;;Request bill position;155
+;country;2;string;;1;bitfield;;Position mask 1;
+;;;;;;;;Bit 0;
+;;;;;;;;Bit 1;
+;;;;;;;;Bit 2;
+;;;;;;;;Bit 3;
+;;;;;;;;Bit 4;
+;;;;;;;;Bit 5;
+;;;;;;;;Bit 6;
+;;;;;;;;Bit 7;
+;;;;;1;bitfield;;Position mask 2;
+;;;;;;;;Bit 0;
+;;;;;;;;Bit 1;
+;;;;;;;;Bit 2;
+;;;;;;;;Bit 3;
+;;;;;;;;Bit 4;
+;;;;;;;;Bit 5;
+;;;;;;;;Bit 6;
+;;;;;;;;Bit 7;
+9A;Route bill;;;;;;;Route bill [ACK];154
+;route code;1;number;;?;number;;error code;
+;return bill;;;0;;;254;escrow is empty;
+;send bill to cashbox / stacker;;;1;;;255;failed to route bill;
+;extend escrow timeout;;;255;;;;;
+99;Modify bill operating mode;;;;;;;Modify bill operating mode;153
+;mode control mask;1;bitfield;;;;;;
+;Bit 0 - stacker;;;;;;;;
+;Bit 1 - escrow;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+98;Request bill operating mode;;;;;;;Request bill operating mode;152
+;;;;;1;bitfield;;mode control mask;
+;;;;;;;;Bit 0 - stacker;
+;;;;;;;;Bit 1 - escrow;
+;;;;;;;;Bit 2;
+;;;;;;;;Bit 3;
+;;;;;;;;Bit 4;
+;;;;;;;;Bit 5;
+;;;;;;;;Bit 6;
+;;;;;;;;Bit 7;
+97;Test lamps;;;;;;;Test lamps [ACK];151
+;lamp no.;1;number;;;;;;
+;lamp control;1;number;;;;;;
+;automatic mode, allow device to control lamp;;;0;;;;;
+;manual mode, force lamp off;;;1;;;;;
+;manual mode, force lamp on;;;2;;;;;
+;manual mode, force lamp to flash ( 50% duty cycle, on time in 10ms steps);;;10;;;;;
+96;Request individual accept counter;;;;;;;Request individual accept counter;150
+;bill/coin type;1;number;;3;number;;Count [LSB]..[MSB];
+95;Request individual error counter;;;;;;;Request individual error counter;149
+;error type;1;number;;3;number;;Count [LSB]..[MSB];
+94;Read opto voltages;;;;;;;Read opto voltages;148
+;;;;;?;number;;variable;
+93;Perform stacker cycle;;;;;;;Perform stacker cycle [ACK];147
+;;;;;?;number;;error code;
+;;;;;;;254;stacker fault;
+;;;;;;;255;stacker not fitted;
+92;Operate bi-directional motors;;;;;;;Operate bi-directional motors [ACK];146
+;motor mask. 0 = off, 1 = on;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;direction flags. 0 = backwards, 1 = forwards;1;bitfield;;;;;;
+;Bit 0;;;;;;;;
+;Bit 1;;;;;;;;
+;Bit 2;;;;;;;;
+;Bit 3;;;;;;;;
+;Bit 4;;;;;;;;
+;Bit 5;;;;;;;;
+;Bit 6;;;;;;;;
+;Bit 7;;;;;;;;
+;speed;1;number;;;;;;
+;default speed;;;0;;;;;
+91;Request currency revision;;;;;;;Request currency revision;145
+;country;?;string;;?;string;;;
+90;Upload bill tables;;;;;;;Upload bill tables [ACK];144
+;block;1;number;;;;;;
+;line;1;number;;;;;;
+;data;?;data;;;;;;
+8F;Begin bill table upgrade;;;;;;;Begin bill table upgrade [ACK];143
+8E;Finish bill table upgrade;;;;;;;Finish bill table upgrade [ACK];142
+8D;Request firmware upgrade capability;;;;;;;Request firmware upgrade capability;141
+;module identifier;?;data;;1;number;;firmware options;
+;;;;;;;0;firmware in ROM / EPROM;
+;;;;;;;1;firmware in FLASH / EEPROM with upgrade capability;
+8C;Upload firmware;;;;;;;Upload firmware [ACK];140
+;block;1;number;;;;;;
+;line;1;number;;;;;;
+;data;?;data;;;;;;
+8B;Begin firmware upgrade;;;;;;;Begin firmware upgrade [ACK];139
+;module identifier;?;data;;;;;;
+8A;Finish firmware upgrade;;;;;;;Finish firmware upgrade [ACK];138
+89;Switch encryption code;;;;;;;Switch encryption code [ACK];137
+;Sec 2 [0..9];1;string;;;;;;
+;Sec 1 [0..9];1;string;;;;;;
+;Sec 4 [0..9];1;string;;;;;;
+;Sec 3 [0..9];1;string;;;;;;
+;Sec 6 [0..9];1;string;;;;;;
+;Sec 5 [0..9];1;string;;;;;;
+88;Store encryption code;;;;;;;Store encryption code [ACK];136
+87;Set accept limit;;;;;;;Set accept limit [ACK];135
+;no. of coins;1;number;;;;;;
+86;Dispense hopper value;;;;;;;Dispense hopper value;134
+;Sec 1-8 [0..9];8;string;;?;number;;event counter;
+;coin value;2;number;;;;;;
+85;Request hopper polling value;;;;;;;Request hopper polling value;133
+;;;;;1;number;;event counter;
+;;;;;2;number;;payout value remaining;
+;;;;;2;number;;last payout : coin value paid;
+;;;;;2;number;;last payout : coin value unpaid;
+84;Emergency stop value;;;;;;;Emergency stop value;132
+;;;;;2;number;;payout value remaining;
+83;Request hopper coin value;;;;;;;Request hopper coin value;131
+;coin type;1;number;;6;string;;;
+;;;;;2;number;;coin value;
+82;Request indexed hopper dispense count;;;;;;;Request indexed hopper dispense count;130
+;coin type;1;number;;3;number;;Count [LSB]..[MSB];
+81;Read barcode data;;;;;;;Read barcode data;129
+;;;;;?;string;;barcode data;
+80;Request money in;;;;;;;;128
+;;;;;4;number;;value;
+7F;Request money out;;;;;;;;127
+;;;;;4;number;;value;
+7E;Clear money counters;;;;;;;Clear money counters [ACK];126
+7D;Pay money out;;;;;;;Pay money out [ACK];125
+;value;4;number;;;;;;
+7C;Verify money out;;;;;;;Verify money out;124
+;;;;;1;;;event counter;
+;;;;;4;number;;paid;
+;;;;;4;number;;unpaid;
+7B;Request activity register;;;;;;;Request activity register;123
+;;;;;1;bitfield;;activity register 1;
+;;;;;;;;B0: Singulator running;
+;;;;;;;;B1: Escalator / Conveyor running;
+;;;;;;;;B2: Processing money in;
+;;;;;;;;B3: Processing money out;
+;;;;;;;;B4: Fault detected;
+;;;;;;;;B5: Avalanche detected;
+;;;;;;;;B6: Changer initialising;
+;;;;;;;;B7: Entry flap open;
+;;;;;1;bitfield;;activity register 2;
+;;;;;;;;B0: Continuous rejects;
+;;;;;;;;B1: Hopper configuration change;
+;;;;;;;;B2: Reject divert active;
+;;;;;;;;B3: Exit cup full;
+;;;;;;;;B4: Non-fatal fault detected;
+;;;;;;;;B5: {Reserved};
+;;;;;;;;B6: {Reserved};
+;;;;;;;;B7: {Reserved};
+7A;Request error status;;;;;;;Request error status;122
+;;;;;1;number;;device no.;
+;;;;;;;1;1 - Hopper 1;
+;;;;;;;2;2 - Hopper 2;
+;;;;;;;3;3 - Hopper 3;
+;;;;;;;4;4 - Hopper 4;
+;;;;;;;5;5 - Hopper 5;
+;;;;;;;6;6 - Hopper 6;
+;;;;;;;7;7 - Hopper 7;
+;;;;;;;8;8 - Hopper 8;
+;;;;;;;100;100 - Coin Acceptor;
+;;;;;;;250;250 - Cashbox;
+;;;;;;;255;255 - System;
+;;;;;1;number;;fault code;
+;;;;;;;1;1 - hopper empty ( requires refilling );
+;;;;;;;2;2 - hopper jam ( remove hopper shelf and clear jam );
+;;;;;;;3;3 - hopper fraud attempt ( alert security );
+;;;;;;;4;4 - hopper fault ( service callout );
+;;;;;;;101;101 - coin acceptor jam ( remove coin acceptor and clear jam );
+;;;;;;;102;102 - coin acceptor fraud attempt ( alert security );
+;;;;;;;103;103 - coin acceptor fault ( service callout );
+;;;;;;;104;104 - coin acceptor to manifold opto fault ( check connector );
+;;;;;;;251;251 - cashbox full ( empty cashbox );
+;;;;;;;252;252 - cashbox missing ( insert cashbox );
+;;;;;;;255;255 - other;
+79;Purge hopper;;;;;;;Purge hopper [ACK];121
+;hopper no.;1;number;;;;;;
+;purge entire system;;;255;;;;;
+;count;1;number;;;;;;
+;purge hopper until empty;;;0;;;;;
+78;Modify hopper balance;;;;;;;Modify hopper balance [ACK];120
+;hopper no.;1;number;;;;;;
+;count;2;number;;;;;;
+77;Request hopper balance;;;;;;;Request hopper balance;119
+;hopper no.;1;number;;6;string;;coin ID;
+;;;;;2;number;;Count [LSB]..[MSB];
+76;Modify cashbox value;;;;;;;Modify cashbox value [ACK];118
+;value;4;number;;;;;;
+75;Request cashbox value;;;;;;;Request cashbox value;117
+;;;;;4;number;;value;
+74;Modify real time clock;;;;;;;Modify real time clock [ACK];116
+;UNIX time_t value;4;number;;;;;;
+73;Request real time clock;;;;;;;Request real time clock;115
+;;;;;4;number;;UNIX time_t value;
+72;Request USB id;;;;;;;Request USB id;114
+;;;;;2;number;;VID;
+;;;;;2;number;;PID;
+71;Switch baud rate;;;;;;;Switch baud rate [ACK];113
+;baud rate operation;1;number;;1;number;;baud rate code;
+;request baud rate in use;;;0;;;0;4800;
+;switch baud rate to new value;;;1;;;1;9600 ( the ccTalk default );
+;request maximum baud rate supported;;;2;;;2;19200;
+;request support for new baud rate;;;3;;;3;38,4;
+;baud rate code;;;;;;4;57,6;
+;;;;;;;5;115,2;
+;;;;;;;6;230,4;
+;;;;;;;7;460,8;
+;;;;;;;8;512;
+;;;;;;;9;921,6;
+;;;;;;;10;1,000,000;
+;;;;;;;18;1,843,200;
+;;;;;;;20;2,000,000;
+;;;;;;;30;3,000,000;
+70;Read encrypted events;;;;;;;Read encrypted events;112
+;challenge 1;1;data;;?;data;;[ CRC checksum LSB ] [ random 1 ] [ event counter ]
+[ result 1A ] [ result 1B ]
+[ result 2A ] [ result 2B ]
+[ challenge 1 ]
+[ random 2 ]
+[ result 3A ] [ result 3B ]
+[ result 4A ] [ result 4B ]
+[ result 5A ] [ result 5B ]
+[ CRC checksum MSB ];
+6F;Request encryption support;;;;;;;Request encryption support;111
+;[ 170 ] [ 85 ] [ 0 ] [ 0 ] [ 85 ] [ 170 ];6;data;;?;data;;[ protocol level ] [ command level ]
+[ protocol key size ]
+[ command key size ] [ command block size ]
+[ trusted mode ]
+[ BNV2 | BNV1 ] [ BNV4 | BNV3 ] [ BNV6 | BNV5 ]
+[ DES1 ] [ DES2 ] [ DES3 ] [ DES4 ]
+[ DES5 ] [ DES6 ] [ DES7 ] [ DES8 ];
+6E;Switch encryption key;;;;;;;Switch encryption key [ACK];110
+;old 1;1;data;;;;;;
+;new 1;1;data;;;;;;
+;Old 2;1;data;;;;;;
+;New 2;1;data;;;;;;
+;Old 3;1;data;;;;;;
+;New 3;1;data;;;;;;
+;Old 4;1;data;;;;;;
+;New 4;1;data;;;;;;
+;Old 5;1;data;;;;;;
+;New 5;1;data;;;;;;
+;Old 6;1;data;;;;;;
+;New 6;1;data;;;;;;
+;Old 7;1;data;;;;;;
+;New 7;1;data;;;;;;
+;Old 8;1;data;;;;;;
+;New 8;1;data;;;;;;
+6D;Request encrypted hopper status;;;;;;;Request encrypted hopper status;109
+;challenge;3;data;;?;data;;[ CRC checksum LSB ] [ challenge 1 ] [ event counter ]
+[ payout coins remaining ] [ last payout : coins paid ]
+[ last payout : coins unpaid ] [ random 1 ]
+[ challenge 2 ]
+[ challenge 3 ]
+[ hopper status register 1 ] [ hopper status register 2 ]
+[ hopper status register 3 ] [ level status ]
+[ random 2 ] [ random 3 ]
+[ CRC checksum MSB ];
+6C;Request encrypted monetary id;;;;;;;Request encrypted monetary id;108
+;position;1;number;;?;data;;[ CRC checksum LSB ] [ position ]
+[ C1 ] [ C2 ] [ C3 ] [ SF ] [ DP ]
+[ challenge 1 ]
+[ random 1 ]
+[ V1 ] [ V2 ] [ V3 ] [ V4 ]
+[ IL ] [ IN ]
+[ CRC checksum MSB ];
+;challenge 1;1;number;;;;;;
+6B;Operate escrow;;;;;;;Operate escrow [ACK];107
+;divert mode;1;number;;;;;;
+;accept coins;;;0;;;;;
+;return coins;;;1;;;;;
+6A;Request escrow status;;;;;;;Request escrow status;106
+;;;;;1;number;;operating status;
+;;;;;;;0;idle;
+;;;;;;;1;operating;
+;;;;;;;2;fault condition;
+;;;;;1;number;;level status;
+;;;;;;;0;escrow empty ( or not full ).;
+;;;;;;;255;escrow full;
+;;;;;1;number;;fault code;
+;;;;;;;0;no fault;
+;;;;;;;10;10 - failure to open accept flap or reach accept position;
+;;;;;;;11;11 - starting from home position;
+;;;;;;;12;12 - starting from unknown position;
+;;;;;;;20;20 - failure to close accept flap or reach home position;
+;;;;;;;21;21 - after successful accept operation;
+;;;;;;;22;22 - after failed accept operation;
+;;;;;;;23;23 - starting from unknown position;
+;;;;;;;30;30 - failure to open return flap or reach return position;
+;;;;;;;31;31 - starting from home position;
+;;;;;;;32;32 - starting from unknown position;
+;;;;;;;40;40 - failure to close return flap or reach home position;
+;;;;;;;41;41 - after successful return operation;
+;;;;;;;42;42 - after failed return operation;
+;;;;;;;43;43 - starting from unknown position;
+;;;;;;;100;100 - supply under-voltage condition;
+;;;;;;;101;101 - supply over-voltage condition;
+;;;;;;;200;200 - fraudulent manipulation detected;
+;;;;;;;250;250 - over-current / jammed ( no movement in either direction possible );
+;;;;;;;255;255 - other fault condition;
+69;Data stream;;;;;;;;105
+;variable;?;data;;?;data;;variable;
+68;Request service status;;;;;;;Request service status [ACK];104
+;mode;1;number;;1;number;;service status;
+;report service status;;;0;;;0;none, device operating normally;
+;clear service status;;;1;;;1;servicing recommended;
+;;;;;;;2;servicing overdue, now operating with reduced performance;
+67;extended commands area;;;;;;;;103
+66;extended commands area;;;;;;;;102
+65;extended commands area;;;;;;;;101
+64;extended commands area;;;;;;;;100
+63;- no official definition -;;;;;;;;99
+62;- no official definition -;;;;;;;;98
+61;- no official definition -;;;;;;;;97
+60;- no official definition -;;;;;;;;96
+5F;- no official definition -;;;;;;;;95
+5E;- no official definition -;;;;;;;;94
+5D;- no official definition -;;;;;;;;93
+5C;- no official definition -;;;;;;;;92
+5B;- no official definition -;;;;;;;;91
+5A;- no official definition -;;;;;;;;90
+59;- no official definition -;;;;;;;;89
+58;- no official definition -;;;;;;;;88
+57;- no official definition -;;;;;;;;87
+56;- no official definition -;;;;;;;;86
+55;- no official definition -;;;;;;;;85
+54;- no official definition -;;;;;;;;84
+53;- no official definition -;;;;;;;;83
+52;- no official definition -;;;;;;;;82
+51;- no official definition -;;;;;;;;81
+50;- no official definition -;;;;;;;;80
+4F;- no official definition -;;;;;;;;79
+4E;- no official definition -;;;;;;;;78
+4D;- no official definition -;;;;;;;;77
+4C;- no official definition -;;;;;;;;76
+4B;- no official definition -;;;;;;;;75
+4A;- no official definition -;;;;;;;;74
+49;- no official definition -;;;;;;;;73
+48;- no official definition -;;;;;;;;72
+47;- no official definition -;;;;;;;;71
+46;- no official definition -;;;;;;;;70
+45;- no official definition -;;;;;;;;69
+44;- no official definition -;;;;;;;;68
+43;- no official definition -;;;;;;;;67
+42;- no official definition -;;;;;;;;66
+41;- no official definition -;;;;;;;;65
+40;- no official definition -;;;;;;;;64
+3F;- no official definition -;;;;;;;;63
+3E;- no official definition -;;;;;;;;62
+3D;- no official definition -;;;;;;;;61
+3C;- no official definition -;;;;;;;;60
+3B;- no official definition -;;;;;;;;59
+3A;- no official definition -;;;;;;;;58
+39;- no official definition -;;;;;;;;57
+38;- no official definition -;;;;;;;;56
+37;- no official definition -;;;;;;;;55
+36;- no official definition -;;;;;;;;54
+35;- no official definition -;;;;;;;;53
+34;- no official definition -;;;;;;;;52
+33;- no official definition -;;;;;;;;51
+32;- no official definition -;;;;;;;;50
+31;- no official definition -;;;;;;;;49
+30;- no official definition -;;;;;;;;48
+2F;- no official definition -;;;;;;;;47
+2E;- no official definition -;;;;;;;;46
+2D;- no official definition -;;;;;;;;45
+2C;- no official definition -;;;;;;;;44
+2B;- no official definition -;;;;;;;;43
+2A;- no official definition -;;;;;;;;42
+29;- no official definition -;;;;;;;;41
+28;- no official definition -;;;;;;;;40
+27;- no official definition -;;;;;;;;39
+26;- no official definition -;;;;;;;;38
+25;- no official definition -;;;;;;;;37
+24;- no official definition -;;;;;;;;36
+23;- no official definition -;;;;;;;;35
+22;- no official definition -;;;;;;;;34
+21;- no official definition -;;;;;;;;33
+20;- no official definition -;;;;;;;;32
+1F;- no official definition -;;;;;;;;31
+1E;- no official definition -;;;;;;;;30
+1D;- no official definition -;;;;;;;;29
+1C;- no official definition -;;;;;;;;28
+1B;- no official definition -;;;;;;;;27
+1A;- no official definition -;;;;;;;;26
+19;- no official definition -;;;;;;;;25
+18;- no official definition -;;;;;;;;24
+17;- no official definition -;;;;;;;;23
+16;- no official definition -;;;;;;;;22
+15;- no official definition -;;;;;;;;21
+14;- no official definition -;;;;;;;;20
+13;- no official definition -;;;;;;;;19
+12;- no official definition -;;;;;;;;18
+11;- no official definition -;;;;;;;;17
+10;- no official definition -;;;;;;;;16
+0F;- no official definition -;;;;;;;;15
+0E;- no official definition -;;;;;;;;14
+0D;- no official definition -;;;;;;;;13
+0C;- no official definition -;;;;;;;;12
+0B;- no official definition -;;;;;;;;11
+0A;- no official definition -;;;;;;;;10
+09;- no official definition -;;;;;;;;9
+08;- no official definition -;;;;;;;;8
+07;- no official definition -;;;;;;;;7
+06;- no official definition -;;;;;;;;6
+05;NACK;;;;;;;;5
+04;Request Comms Revision ;;;;;;;Request Comms Revision ;4
 ;;;;;1;number;;release;
 ;;;;;1;number;;major revision;
 ;;;;;1;number;;minor revision;
-01;Reset device;;;;;;;Reset device. replies with ACK after the execution of a soft reset;
+03;Clear comms status variables;;;;;;;Clear comms status variables [ACK];3
+02;Request comms status variables;;;;;;;Request comms status variables;2
+;;;;;1;number;;rx timeouts;
+;;;;;1;number;;rx bytes ignored;
+;;;;;1;number;;rx bad checksums;
+01;Reset device;;;;;;;Reset device [ACK];1
+00;ACK;;;;;;;ACK;0

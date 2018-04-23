@@ -1,0 +1,141 @@
+Command (HEX);Command description;Command parameter length (DEC);Command parameter type;Command parameter value (DEC);Reply parameter length (DEC);Reply parameter type;Reply parameter value (DEC);Reply description;Comment
+fe;Simple poll (ACK reply if successful);;;;;;;Simple poll (ACK reply if successful);254
+fd;Address poll ;;;;;;;Address poll ;253
+;;;;;1;number;;device address;
+FC;Address clash;;;;;;;Address clash;252
+;;;;;1;number;;variable delay;
+;;;;;1;number;;slave address byte;
+FB;Address change;;;;;;;Address change [ACK];251
+;new address;1;number;;;;;;
+FA;Address random;;;;;;;Address random [ACK];250
+F9;Request polling priority;;;;;;;Request polling priority;249
+;;;;;1;number;;units;
+;;;;;;;0;0 - special case, see below;
+;;;;;;;1;1 - ms;
+;;;;;;;2;2 - x10 ms;
+;;;;;;;3;3 - seconds;
+;;;;;;;4;4 - minutes;
+;;;;;;;5;5 - hours;
+;;;;;;;6;6 - days;
+;;;;;;;7;7 - weeks;
+;;;;;;;8;8 - months;
+;;;;;;;9;9 - years;
+;;;;;1;number;;value;
+;;;;;;;255;If units = 0 device uses a hardware REQUEST POLL line;
+F7;Request variable set;;;;;;;Request variable set;247
+;;;;;?;data;;variable;
+f6;Request manufacturer ID;;;;;;;Request manufacturer ID;246
+;;;;;?;string;;device manufacturer string;
+f5;Request equipment category ID ;;;;;;;Request equipment category ID ;245
+;;;;;?;string;;device type string;
+f4;Request product code ;;;;;;;Request product code ;244
+;;;;;?;string;;device product code;
+f2;Request serial number ;;;;;;;Request serial number ;242
+;;;;;3;number;;device serial number;
+f1;Request software revision ;;;;;;;Request software revision ;241
+;;;;;?;string;;device software version;
+ec;Read Opto States ;;;;;;;Read Opto States ;236
+;;;;;1;bitfield;;status Byte of optical sensors ;
+;;;;;;;;Bit 0: M1 ;
+;;;;;;;;Bit 1: M2 ;
+;;;;;;;;Bit 2: M3 return into hopper ;
+;;;;;;;;Bit 3: LB5 right storage position ;
+;;;;;;;;Bit 4: LB4 left storage position ;
+;;;;;;;;Bit 5: LB2 supply exit coin ;
+;;;;;;;;Bit 6: LB3 coin recover ;
+;;;;;;;;Bit 7: NU ;
+EB;Read DH public key;;;;;;;;235
+EA;Send DH public key;;;;;;;;234
+E6;Request inhibit status;;;;;;;;230
+E5;Read buffered credit or error codes;;;;;;;;229
+DF;Modify inhibit and override registers;;;;;;;;223
+DB;Enter new PIN number;;;;;;;Enter new PIN number [ACK];219
+;new pin [1..4];4;number;;;;;;
+DA;Enter PIN number;;;;;;;Enter PIN number [ACK];218
+;new pin [1..4];4;number;;;;;;
+D9;Request payout high / low status;;;;;;;Request payout high / low status;217
+;hopper no.;?;number;;1;bitfield;;status;
+;;;;;;;;Bit 0: Low level sensor status;
+;;;;;;;;Bit 1: High level sensor status;
+;;;;;;;;Bit 2: <reserved>;
+;;;;;;;;Bit 3: <reserved>;
+;;;;;;;;Bit 4: Low level sensor support;
+;;;;;;;;Bit 5: High level sensor support;
+;;;;;;;;Bit 6: <reserved>;
+;;;;;;;;Bit 7: <reserved>;
+D8;Request data storage availability;;;;;;;;216
+;memory type;1;number;;;;;;
+;volatile ( lost on reset );;;0;;;;;
+;volatile ( lost on power-down );;;1;;;;;
+;permanent ( limited use );;;2;;;;;
+;permanent ( unlimited use );;;3;;;;;
+;read blocks;1;number;;;;;;
+;read bytes per block;1;number;;;;;;
+;write blocks;1;number;;;;;;
+;write bytes per block;1;number;;;;;;
+D7;Read data block;;;;;;;;215
+;block number;1;number;;1;number;;variable>;
+D6;Write data block;;;;;;;Write data block [ACK];214
+;block number;1;number;;;;;;
+;variable;1;number;;;;;;
+D2;Modify sorter path;;;;;;;;210
+D1;Request sorter path;;;;;;;;209
+CE;Request sorter path;;;;;;;;206
+CD;Modify bus baude rate;;;;;;;;205
+C8;Request product parameters;;;;;;;;200
+C0;Request build code;;;;;;;Request build code;192
+;;;;;?;string;;build code;
+AC;Emergency stop;;;;;;;Emergency stop;172
+;;;;;1;number;;payout coins remaining;
+AB;Request hopper coin;;;;;;;Request hopper coin;171
+;;;;;?;string;;coin name;
+A9;Request address mode;;;;;;;Request address mode;169
+;;;;;1;bitfield;;address mode;
+;;;;;;;;B0 - Address is stored in Flash / ROM;
+;;;;;;;;B1 - Address is stored in RAM;
+;;;;;;;;B2 - Address is stored in EEPROM or equivalent;
+;;;;;;;;B3 - Address selection via interface connector;
+;;;;;;;;B4 - Address selection via PCB links;
+;;;;;;;;B5 - Address selection via switch;
+;;;;;;;;B6 - Address may be changed with serial commands ( volatile );
+;;;;;;;;B7 - Address may be changed with serial commands ( non-volatile );
+A8;Request hopper dispense count;;;;;;;Request hopper dispense count;168
+;;;;;1;number;;Count [LSB]..[MSB];
+A7;Dispense hopper coins;;;;;;;Dispense hopper coins [ACK];167
+;variable;0;data;;?;number;;event counter;
+;no. of coins;1;number;;;;;;
+A6;Request hopper status;;;;1;number;;Request hopper status;166
+;;;;;1;number;;event counter;
+;;;;;1;number;;payout coins remaining;
+;;;;;1;number;;last payout : coins paid;
+;;;;;;;;last payout : coins unpaid;
+A5;Modify variable set;;;;;;;Modify variable set [ACK];165
+;variable;?;data;;;;;;
+A4;Enable hopper;;;;;;;Enable hopper [ACK];164
+;enable code;1;number;;;;;;
+;magic number;;;165;;;;;
+A3;Test hopper;;;;;;;Test hopper;163
+;;;;;1;bitfield;;hopper status register 1;
+;;;;;;;;Bit 0 - Absolute maximum current exceeded;
+;;;;;;;;Bit 1 - Payout timeout occurred;
+;;;;;;;;Bit 2 - Motor reversed during last payout to clear a jam;
+;;;;;;;;Bit 3 - Opto fraud attempt, path blocked during idle;
+;;;;;;;;Bit 4 - Opto fraud attempt, short-circuit during idle;
+;;;;;;;;Bit 5 - Opto blocked permanently during payout;
+;;;;;;;;Bit 6 - Power-up detected;
+;;;;;;;;Bit 7 - Payout disabled;
+;;;;;?;data;;hopper status register 2, 3;
+A1;Pump RNG;;;;;;;Pump RNG [ACK];161
+;variable;?;data;;;;;;
+A0;Request cipher key;;;;;;;Request cipher key;160
+;;;;;?;data;;variable;
+04;Request Comms Revision ;;;;;;;Request Comms Revision ;4
+;;;;;1;number;;release;
+;;;;;1;number;;major revision;
+;;;;;1;number;;minor revision;
+03;Clear comms status variables;;;;;;;Clear comms status variables [ACK];3
+02;Request comms status variables;;;;;;;Request comms status variables;2
+;;;;;1;number;;rx timeouts;
+;;;;;1;number;;rx bytes ignored;
+;;;;;1;number;;rx bad checksums;
+1;Reset device;;;;;;;Reset device. replies with ACK after the execution of a soft reset;1

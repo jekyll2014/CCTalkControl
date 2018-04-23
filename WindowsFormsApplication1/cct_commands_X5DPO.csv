@@ -1,28 +1,18 @@
 Command (HEX);Command description;Command parameter length (DEC);Command parameter type;Command parameter value (DEC);Reply parameter length (DEC);Reply parameter type;Reply parameter value (DEC);Reply description;Comment
-fe;Simple poll (ACK reply if successful);;;;;;;Simple poll (ACK reply if successful);
-fd;Address poll ;;;;;;;Address poll ;
+fe;Simple poll (ACK reply if successful);;;;;;;Simple poll (ACK reply if successful);254
+fd;Address poll ;;;;;;;Address poll ;253
 ;;;;;1;number;;device address;
-f6;Request manufacturer ID;;;;;;;Request manufacturer ID;
+f6;Request manufacturer ID;;;;;;;Request manufacturer ID;246
 ;;;;;?;string;;device manufacturer string;
-f5;Request equipment category ID ;;;;;;;Request equipment category ID ;
+f5;Request equipment category ID ;;;;;;;Request equipment category ID ;245
 ;;;;;?;string;;device type string;
-f4;Request product code ;;;;;;;Request product code ;
+f4;Request product code ;;;;;;;Request product code ;244
 ;;;;;?;string;;device product code;
-f2;Request serial number ;;;;;;;Request serial number ;
+f2;Request serial number ;;;;;;;Request serial number ;242
 ;;;;;3;number;;device serial number;
-f1;Request software revision ;;;;;;;Request software revision ;
+f1;Request software revision ;;;;;;;Request software revision ;241
 ;;;;;?;string;;device software version;
-d9;Request Payout Hi-Lo status ;;;;;;;Request Payout Hi-Lo status ;
-;;;;;1;bitfield;;status and the presence of sensors of minimum and maximum ;
-;;;;;;;;Bit0=1 Coins do NOT overtake the minimum sensor (if=0 they overtake) ;
-;;;;;;;;Bit1=1 Coins do NOT overtake the maximum sensor (if=0 they overtake) ;
-;;;;;;;;Bit2=1 Minimum sensor present (if=0 absent) ;
-;;;;;;;;Bit3=1 Maximum sensor present (if= absent ) ;
-;;;;;;;;Bit4;
-;;;;;;;;Bit5;
-;;;;;;;;Bit6;
-;;;;;;;;Bit7;
-ec;Read Opto States ;;;;;;;Read Opto States ;
+ec;Read Opto States ;;;;;;;Read Opto States ;236
 ;;;;;1;bitfield;;status Byte of optical sensors ;
 ;;;;;;;;Bit 0: M1 ;
 ;;;;;;;;Bit 1: M2 ;
@@ -32,8 +22,8 @@ ec;Read Opto States ;;;;;;;Read Opto States ;
 ;;;;;;;;Bit 5: LB2 supply exit coin ;
 ;;;;;;;;Bit 6: LB3 coin recover ;
 ;;;;;;;;Bit 7: NU ;
-e7;Modify inhibit mask ;;;;;;;Modify inhibit mask ;
-;inhibit mask byte 1;1;bitfield;;;;;ACK reply if successful;
+e7;Modify inhibit mask ;;;;;;;Modify inhibit mask (ACK reply if successful);231
+;inhibit mask byte 1;1;bitfield;;;;;;
 ;Bit0=1 Enable channel 1;;;;;;;;
 ;Bit1=1 Enable channel 2;;;;;;;;
 ;Bit2=1 Enable channel 3;;;;;;;;
@@ -51,7 +41,7 @@ e7;Modify inhibit mask ;;;;;;;Modify inhibit mask ;
 ;Bit5=1 Enable channel 14;;;;;;;;
 ;Bit6=1 Enable channel 15;;;;;;;;
 ;Bit7=1 Enable channel 16;;;;;;;;
-e6;Request inhibit mask;;;;;;;Request inhibit mask;
+e6;Request inhibit mask;;;;;;;Request inhibit mask;230
 ;;;;;1;bitfield;;inhibit mask, byte 1;
 ;;;;;;;;Bit0=1 Enable channel 1;
 ;;;;;;;;Bit1=1 Enable channel 2;
@@ -70,15 +60,25 @@ e6;Request inhibit mask;;;;;;;Request inhibit mask;
 ;;;;;;;;Bit5=1 Enable channel 14;
 ;;;;;;;;Bit6=1 Enable channel 15;
 ;;;;;;;;Bit7=1 Enable channel 16;
-c5;Calculate ROM checksum ;;;;;;;Calculate ROM checksum ;
+d9;Request Payout Hi-Lo status ;;;;;;;Request Payout Hi-Lo status ;217
+;;;;;1;bitfield;;status and the presence of sensors of minimum and maximum ;
+;;;;;;;;Bit0=1 Coins do NOT overtake the minimum sensor (if=0 they overtake) ;
+;;;;;;;;Bit1=1 Coins do NOT overtake the maximum sensor (if=0 they overtake) ;
+;;;;;;;;Bit2=1 Minimum sensor present (if=0 absent) ;
+;;;;;;;;Bit3=1 Maximum sensor present (if= absent ) ;
+;;;;;;;;Bit4;
+;;;;;;;;Bit5;
+;;;;;;;;Bit6;
+;;;;;;;;Bit7;
+c5;Calculate ROM checksum ;;;;;;;Calculate ROM checksum ;197
 ;;;;;3;number;;;
-a9;Request address mode ;;;;;;;Request address mode ;
+a9;Request address mode ;;;;;;;Request address mode ;169
 ;;;;;1;number;;the address of the peripheral device;
-;;;;;;;32; is set through deep-sw ;
-a4;Enable Hopper ;;;;;;;Enable Hopper ;
+;;;;;;;32; is set through deep-sw ;0
+a4;Enable Hopper ;;;;;;;Enable Hopper ;164
 ;magic value (165 to enable);1;number;;;;;;
 ;the hopper is qualified for payments ;;;165;;;;;
-a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new qualification (command 164) or at reset (command 1);
+a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new qualification (command 164) or at reset (command 1);163
 ;;;;;1;bitfield;;status byte 1;
 ;;;;;;;;Bit0=1 Stopped hopper for current and restarted after release.;
 ;;;;;;;;Bit1=1 Timeout during supply (lack of coins or blocked engine);
@@ -97,11 +97,11 @@ a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new q
 ;;;;;;;;Bit5=1 Blocked Hopper for polling-timeout during "purge hopper" ;
 ;;;;;;;;Bit6= NU ;
 ;;;;;;;;Bit7= NU ;
-86;Dispense hopper value [amount mode];;;;;;;Dispense hopper value [amount mode];
+86;Dispense hopper value [amount mode];;;;;;;Dispense hopper value [amount mode];134
 ;default value [0];8;number;;;;;;
 ;;;;0;;;;;
 ;value;2;number;;;;;;
-86;Dispense hopper value [channel mode];;;;;;;Dispense hopper value [channel mode];
+86;Dispense hopper value [channel mode];;;;;;;Dispense hopper value [channel mode];134
 ;default value [0];8;number;;;;;;
 ;;;;0;;;;;
 ;Channel 1 value;1;number;;;;;;
@@ -112,7 +112,7 @@ a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new q
 ;Channel 6 value;1;number;;;;;;
 ;Channel 7 value;1;number;;;;;;
 ;Channel 8 value;1;number;;;;;;
-85;Request hopper polling value;;;;;;;Request hopper polling value;
+85;Request hopper polling value;;;;;;;Request hopper polling value;133
 ;;;;;1;number;;Event Counter ;
 ;;;;;2;number;;the value in cent of the value amount that has to be supplied;
 ;;;;;2;number;;the value in cent of the supplied amount;
@@ -121,18 +121,18 @@ a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new q
 ;;;;;;;7;payment in progress, stable engine ;
 ;;;;;;;8;payment in progress, forward engine ;
 ;;;;;;;9;payment in progress, backward engine ;
-84;Emergency stop value ;;;;;;;Emergency stop value ;
+84;Emergency stop value ;;;;;;;Emergency stop value ;132
 ;;;;;2;number;;value in cent of the paid amount until the stop;
-83;Request hopper coin value ;;;;;;;Request hopper coin value ;
+83;Request hopper coin value ;;;;;;;Request hopper coin value ;131
 ;channel number [1?];1;number;;6;string;;coin code;
 ;;;;;2;money_invert;;value in cent and counts;
-82;Request indexed hopper dispense count ;;;;;;;Request indexed hopper dispense count ;
+82;Request indexed hopper dispense count ;;;;;;;Request indexed hopper dispense count ;130
 ;channel;1;number;;2;number;;number of the coin supplied from that channel from the reset ;
-79;Purge hopper ;;;;;;;Purge hopper ;
-1f;Reprogram pocket ;;;;;;;Reprogram pocket ;
+79;Purge hopper ;;;;;;;Purge hopper ;121
+1f;Reprogram pocket ;;;;;;;Reprogram pocket ;31
 ;channel number for left pocket;1;number;;1;number;;New channel number for left pocket;
 ;channel number for right pocket;1;number;;1;number;;New channel number for right pocket;
-1e;Request pocket status ;;;;;;;Request pocket status ;
+1e;Request pocket status ;;;;;;;Request pocket status ;30
 ;;;;;1;number;;number of channel programmed in left pocket ;
 ;;;;;1;number;;number of channel programmed in right pocket;
 ;;;;;2;number;;coin value programmed in left pocket;
@@ -146,8 +146,8 @@ a3;Test Hopper ;;;;;;;Test Hopper. Bits reset (except bit 3 and 6) at each new q
 ;;;;;;;;Bit5;
 ;;;;;;;;Bit6;
 ;;;;;;;;Bit7;
-04;Request Comms Revision ;;;;;;;Request Comms Revision ;
+04;Request Comms Revision ;;;;;;;Request Comms Revision ;4
 ;;;;;1;number;;release;
 ;;;;;1;number;;major revision;
 ;;;;;1;number;;minor revision;
-01;Reset device;;;;;;;Reset device. replies with ACK after the execution of a soft reset;
+01;Reset device;;;;;;;Reset device. replies with ACK after the execution of a soft reset;1
