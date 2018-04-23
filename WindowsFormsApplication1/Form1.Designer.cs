@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView_commands = new System.Windows.Forms.DataGridView();
             this.button_next = new System.Windows.Forms.Button();
             this.button_find = new System.Windows.Forms.Button();
@@ -44,6 +44,8 @@
             this.commandsCSVFileName_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commandsCSV_ToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.enableDatabaseEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showIncorrectRepliesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autoParseReplyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.COMPortToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_PortName = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripComboBox_PortSpeed = new System.Windows.Forms.ToolStripComboBox();
@@ -61,7 +63,7 @@
             this.button_Send = new System.Windows.Forms.Button();
             this.listBox_code = new System.Windows.Forms.ListBox();
             this.button_clear = new System.Windows.Forms.Button();
-            this.button_remove = new System.Windows.Forms.Button();
+            this.button_removeReplies = new System.Windows.Forms.Button();
             this.textBox_search = new System.Windows.Forms.TextBox();
             this.textBox_deviceAddress = new System.Windows.Forms.TextBox();
             this.textBox_hostAddress = new System.Windows.Forms.TextBox();
@@ -84,8 +86,6 @@
             this.contextMenuStrip_dataBase = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newCommandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showIncorrectRepliesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.autoParseReplyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_commands)).BeginInit();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -110,14 +110,14 @@
             this.dataGridView_commands.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.dataGridView_commands.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridView_commands.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView_commands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_commands.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dataGridView_commands.Location = new System.Drawing.Point(0, 0);
@@ -245,6 +245,24 @@
             this.enableDatabaseEditToolStripMenuItem.Text = "Enable database edit";
             this.enableDatabaseEditToolStripMenuItem.Click += new System.EventHandler(this.EnableDatabaseEditToolStripMenuItem_Click);
             // 
+            // showIncorrectRepliesToolStripMenuItem
+            // 
+            this.showIncorrectRepliesToolStripMenuItem.Checked = true;
+            this.showIncorrectRepliesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showIncorrectRepliesToolStripMenuItem.Name = "showIncorrectRepliesToolStripMenuItem";
+            this.showIncorrectRepliesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.showIncorrectRepliesToolStripMenuItem.Text = "Show incorrect replies";
+            this.showIncorrectRepliesToolStripMenuItem.Click += new System.EventHandler(this.showIncorrectRepliesToolStripMenuItem_Click);
+            // 
+            // autoParseReplyToolStripMenuItem
+            // 
+            this.autoParseReplyToolStripMenuItem.Checked = true;
+            this.autoParseReplyToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.autoParseReplyToolStripMenuItem.Name = "autoParseReplyToolStripMenuItem";
+            this.autoParseReplyToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.autoParseReplyToolStripMenuItem.Text = "Auto parse reply";
+            this.autoParseReplyToolStripMenuItem.Click += new System.EventHandler(this.autoParseReplyToolStripMenuItem_Click);
+            // 
             // COMPortToolStripMenuItem
             // 
             this.COMPortToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -353,7 +371,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.button_Send);
             this.splitContainer1.Panel1.Controls.Add(this.listBox_code);
             this.splitContainer1.Panel1.Controls.Add(this.button_clear);
-            this.splitContainer1.Panel1.Controls.Add(this.button_remove);
+            this.splitContainer1.Panel1.Controls.Add(this.button_removeReplies);
             this.splitContainer1.Panel1MinSize = 150;
             // 
             // splitContainer1.Panel2
@@ -425,17 +443,17 @@
             this.button_clear.UseVisualStyleBackColor = true;
             this.button_clear.Click += new System.EventHandler(this.Button_clear_Click);
             // 
-            // button_remove
+            // button_removeReplies
             // 
-            this.button_remove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_remove.Location = new System.Drawing.Point(4, 272);
-            this.button_remove.Margin = new System.Windows.Forms.Padding(2);
-            this.button_remove.Name = "button_remove";
-            this.button_remove.Size = new System.Drawing.Size(91, 24);
-            this.button_remove.TabIndex = 11;
-            this.button_remove.Text = "Remove replies";
-            this.button_remove.UseVisualStyleBackColor = true;
-            this.button_remove.Click += new System.EventHandler(this.Button_remove_Click);
+            this.button_removeReplies.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_removeReplies.Location = new System.Drawing.Point(4, 272);
+            this.button_removeReplies.Margin = new System.Windows.Forms.Padding(2);
+            this.button_removeReplies.Name = "button_removeReplies";
+            this.button_removeReplies.Size = new System.Drawing.Size(91, 24);
+            this.button_removeReplies.TabIndex = 11;
+            this.button_removeReplies.Text = "Remove replies";
+            this.button_removeReplies.UseVisualStyleBackColor = true;
+            this.button_removeReplies.Click += new System.EventHandler(this.Button_removeReplies_Click);
             // 
             // textBox_search
             // 
@@ -647,24 +665,6 @@
             this.findThisToolStripMenuItem.Text = "Find this";
             this.findThisToolStripMenuItem.Click += new System.EventHandler(this.FindThisToolStripMenuItem_Click);
             // 
-            // showIncorrectRepliesToolStripMenuItem
-            // 
-            this.showIncorrectRepliesToolStripMenuItem.Checked = true;
-            this.showIncorrectRepliesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showIncorrectRepliesToolStripMenuItem.Name = "showIncorrectRepliesToolStripMenuItem";
-            this.showIncorrectRepliesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.showIncorrectRepliesToolStripMenuItem.Text = "Show incorrect replies";
-            this.showIncorrectRepliesToolStripMenuItem.Click += new System.EventHandler(this.showIncorrectRepliesToolStripMenuItem_Click);
-            // 
-            // autoParseReplyToolStripMenuItem
-            // 
-            this.autoParseReplyToolStripMenuItem.Checked = true;
-            this.autoParseReplyToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.autoParseReplyToolStripMenuItem.Name = "autoParseReplyToolStripMenuItem";
-            this.autoParseReplyToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.autoParseReplyToolStripMenuItem.Text = "Auto parse reply";
-            this.autoParseReplyToolStripMenuItem.Click += new System.EventHandler(this.autoParseReplyToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -719,7 +719,7 @@
         private System.Windows.Forms.Button button_add;
         private System.Windows.Forms.Button button_insert;
         private System.Windows.Forms.Button button_replace;
-        private System.Windows.Forms.Button button_remove;
+        private System.Windows.Forms.Button button_removeReplies;
         private System.Windows.Forms.TextBox textBox_hostAddress;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button_clear;

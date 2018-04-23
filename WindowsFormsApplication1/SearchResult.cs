@@ -189,6 +189,16 @@ public class ParseEscPos
             }
         }
 
+        //recalculate "?" according to the size of parameters after it.
+        for (int i = 0; i < commandParamSizeDefined.Count - 1; i++)
+        {
+            if (commandParamSizeDefined[i] == "?")
+            {
+                for (int i1 = i + 1; i1 < commandParamSize.Count; i1++) commandParamSize[i] -= commandParamSize[i1];
+                i = commandParamSizeDefined.Count;
+            }
+        }
+
         int commandParamPosition = commandFramePosition + 1;
         //process each parameter
         for (int parameter = 0; parameter < commandParamDbLineNum.Count; parameter++)
