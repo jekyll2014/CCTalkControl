@@ -126,7 +126,7 @@
             this.dataGridView_commands.ReadOnly = true;
             this.dataGridView_commands.RowHeadersVisible = false;
             this.dataGridView_commands.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_commands.Size = new System.Drawing.Size(792, 234);
+            this.dataGridView_commands.Size = new System.Drawing.Size(788, 230);
             this.dataGridView_commands.TabIndex = 2;
             this.dataGridView_commands.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_commands_CellDoubleClick);
             this.dataGridView_commands.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridView_commands_CellMouseUp);
@@ -360,7 +360,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
@@ -425,7 +425,7 @@
             this.listBox_code.HorizontalScrollbar = true;
             this.listBox_code.Location = new System.Drawing.Point(3, 33);
             this.listBox_code.Name = "listBox_code";
-            this.listBox_code.Size = new System.Drawing.Size(147, 225);
+            this.listBox_code.Size = new System.Drawing.Size(145, 212);
             this.listBox_code.TabIndex = 0;
             this.listBox_code.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListBox_code_KeyDown);
             this.listBox_code.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListBox_code_MouseDoubleClick);
@@ -434,7 +434,7 @@
             // button_clear
             // 
             this.button_clear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_clear.Location = new System.Drawing.Point(99, 271);
+            this.button_clear.Location = new System.Drawing.Point(99, 269);
             this.button_clear.Margin = new System.Windows.Forms.Padding(2);
             this.button_clear.Name = "button_clear";
             this.button_clear.Size = new System.Drawing.Size(47, 24);
@@ -446,7 +446,7 @@
             // button_removeReplies
             // 
             this.button_removeReplies.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_removeReplies.Location = new System.Drawing.Point(4, 272);
+            this.button_removeReplies.Location = new System.Drawing.Point(4, 270);
             this.button_removeReplies.Margin = new System.Windows.Forms.Padding(2);
             this.button_removeReplies.Name = "button_removeReplies";
             this.button_removeReplies.Size = new System.Drawing.Size(91, 24);
@@ -458,7 +458,7 @@
             // textBox_search
             // 
             this.textBox_search.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox_search.Location = new System.Drawing.Point(2, 245);
+            this.textBox_search.Location = new System.Drawing.Point(2, 243);
             this.textBox_search.MaxLength = 9;
             this.textBox_search.Name = "textBox_search";
             this.textBox_search.Size = new System.Drawing.Size(80, 20);
@@ -496,7 +496,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 229);
+            this.label2.Location = new System.Drawing.Point(3, 227);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 13);
             this.label2.TabIndex = 13;
@@ -527,7 +527,7 @@
             this.dataGridView_result.Location = new System.Drawing.Point(88, 2);
             this.dataGridView_result.Name = "dataGridView_result";
             this.dataGridView_result.RowHeadersVisible = false;
-            this.dataGridView_result.Size = new System.Drawing.Size(540, 293);
+            this.dataGridView_result.Size = new System.Drawing.Size(538, 291);
             this.dataGridView_result.TabIndex = 3;
             this.dataGridView_result.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_result_CellValueChanged);
             // 
@@ -545,7 +545,7 @@
             // button_newCommand
             // 
             this.button_newCommand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_newCommand.Location = new System.Drawing.Point(2, 270);
+            this.button_newCommand.Location = new System.Drawing.Point(2, 268);
             this.button_newCommand.Margin = new System.Windows.Forms.Padding(2);
             this.button_newCommand.Name = "button_newCommand";
             this.button_newCommand.Size = new System.Drawing.Size(80, 24);
@@ -578,6 +578,7 @@
             // 
             // splitContainer2
             // 
+            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 24);
             this.splitContainer2.Name = "splitContainer2";
