@@ -10,12 +10,10 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        DataTable CommandDatabase = new DataTable();
-        DataTable ResultDatabase = new DataTable();
-
-        string SourceFile = "default.txt";
-
-        int SerialtimeOut = 3000;
+        private DataTable CommandDatabase = new DataTable();
+        private DataTable ResultDatabase = new DataTable();
+        private string SourceFile = "default.txt";
+        private int SerialtimeOut = 3000;
 
         public class ResultColumns
         {
@@ -159,7 +157,11 @@ namespace WindowsFormsApplication1
                     if (listBox_code.SelectedIndex > 0) command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex - 1].ToString().Substring(9, 3)); //reply
                     else return;
                 }
-                else return;
+                else
+                {
+                    MessageBox.Show("Can't detect if it's reply or command.");
+                    return;
+                }
                 if (ParseEscPos.FindCommand(0, command, lineNum))
                 {
                     ParseEscPos.FindCommandParameter();
@@ -811,8 +813,11 @@ namespace WindowsFormsApplication1
                                     if (crc != _rxBytes[_rxBytes.Count - 1]) _crcError = true;
                                 }
                             }
+                            else if (SerialPort1.BytesToRead > 0)
+                                _rxBytes.Add((byte)SerialPort1.ReadByte());
                         }
-                        if (SerialPort1.BytesToRead <= 0 && DateTime.UtcNow.Subtract(startTime).TotalMilliseconds > SerialtimeOut) _timeout = true;
+                        if (DateTime.UtcNow.Subtract(startTime).TotalMilliseconds > SerialtimeOut) _timeout = true;
+                        //if (SerialPort1.BytesToRead <= 0 && DateTime.UtcNow.Subtract(startTime).TotalMilliseconds > SerialtimeOut) _timeout = true;
                     }
                 }
                 catch (Exception ex)
@@ -831,6 +836,7 @@ namespace WindowsFormsApplication1
                     if (autoParseReplyToolStripMenuItem.Checked) Button_next_Click(this, EventArgs.Empty);
                 }
             }
+            else MessageBox.Show("Incorrect host/device address or data incomplete");
         }
 
         private void Button_SendAll_Click(object sender, EventArgs e)
@@ -849,7 +855,7 @@ namespace WindowsFormsApplication1
             }
         }
 
-        void SerialPopulate()
+        private void SerialPopulate()
         {
             toolStripComboBox_PortName.Items.Clear();
             toolStripComboBox_PortHandshake.Items.Clear();
@@ -882,7 +888,7 @@ namespace WindowsFormsApplication1
             {
                 toolStripMenuItem_Connect.Enabled = false;
             }
-            toolStripComboBox_PortSpeed.SelectedIndex = 0;
+            toolStripComboBox_PortSpeed.SelectedIndex = 6;
             toolStripComboBox_PortHandshake.SelectedIndex = 0;
             toolStripComboBox_PortDataBits.SelectedIndex = 0;
             toolStripComboBox_PortParity.SelectedIndex = 0;
@@ -1003,5 +1009,6 @@ namespace WindowsFormsApplication1
                 }
             }
         }
+
     }
 }
