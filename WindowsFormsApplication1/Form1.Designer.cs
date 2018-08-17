@@ -425,7 +425,7 @@
             this.listBox_code.HorizontalScrollbar = true;
             this.listBox_code.Location = new System.Drawing.Point(3, 33);
             this.listBox_code.Name = "listBox_code";
-            this.listBox_code.Size = new System.Drawing.Size(145, 212);
+            this.listBox_code.Size = new System.Drawing.Size(145, 225);
             this.listBox_code.TabIndex = 0;
             this.listBox_code.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListBox_code_KeyDown);
             this.listBox_code.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListBox_code_MouseDoubleClick);

@@ -145,6 +145,26 @@ namespace WindowsFormsApplication1
             if (listBox_code.SelectedItem.ToString().Length >= 5)
             {
                 //check if it's a command or reply
+
+                // if command from host
+                if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == hostAddress)
+                {
+                    //command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex].ToString().Substring(9, 3));
+                    command = Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3));
+                }
+                // if reply to host
+                else if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(0, 3)) == hostAddress)
+                {
+                    if (listBox_code.SelectedIndex > 0) command = Accessory.ConvertHexToByte(listBox_code.Items[listBox_code.SelectedIndex - 1].ToString().Substring(9, 3)); //reply
+                    else return;
+                }
+                else
+                {
+                    MessageBox.Show("Can't detect if it's reply or command.");
+                    return;
+                }
+
+                /*
                 // if command
                 if (Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(6, 3)) == hostAddress && Accessory.ConvertHexToByte(listBox_code.SelectedItem.ToString().Substring(9, 3)) != 0)
                 {
@@ -162,6 +182,7 @@ namespace WindowsFormsApplication1
                     MessageBox.Show("Can't detect if it's reply or command.");
                     return;
                 }
+                */
                 if (ParseEscPos.FindCommand(0, command, lineNum))
                 {
                     ParseEscPos.FindCommandParameter();
