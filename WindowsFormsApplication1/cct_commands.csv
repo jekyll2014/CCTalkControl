@@ -102,7 +102,7 @@ E9;Latch output lines;;;;;;;Latch output lines [ACK];233
 E8;Perform self-check;;;;;;;Perform self-check;232
 ;;;;;?;data;;fault code;
 E7;Modify inhibit status;;;;;;;Modify inhibit status [ACK];231
-;;1;bitfield;;;;;;
+;Channels 1-8;1;bitfield;;;;;;
 ;Bit 0;;;;;;;;
 ;Bit 1;;;;;;;;
 ;Bit 2;;;;;;;;
@@ -111,7 +111,7 @@ E7;Modify inhibit status;;;;;;;Modify inhibit status [ACK];231
 ;Bit 5;;;;;;;;
 ;Bit 6;;;;;;;;
 ;Bit 7;;;;;;;;
-;;1;bitfield;;;;;;
+;Channels 9-16;1;bitfield;;;;;;
 ;Bit 8;;;;;;;;
 ;Bit 9;;;;;;;;
 ;Bit 10;;;;;;;;
@@ -121,7 +121,7 @@ E7;Modify inhibit status;;;;;;;Modify inhibit status [ACK];231
 ;Bit 14;;;;;;;;
 ;Bit 15;;;;;;;;
 E6;Request inhibit status;;;;;;;Request inhibit status;230
-;;;;;1;bitfield;;;
+;;;;;1;bitfield;;Channels 1-8;
 ;;;;;;;;Bit 0;
 ;;;;;;;;Bit 1;
 ;;;;;;;;Bit 2;
@@ -130,7 +130,7 @@ E6;Request inhibit status;;;;;;;Request inhibit status;230
 ;;;;;;;;Bit 5;
 ;;;;;;;;Bit 6;
 ;;;;;;;;Bit 7;
-;;;;;1;bitfield;;;
+;;;;;1;bitfield;;Channels 9-16;
 ;;;;;;;;Bit 8;
 ;;;;;;;;Bit 9;
 ;;;;;;;;Bit 10;
@@ -139,29 +139,29 @@ E6;Request inhibit status;;;;;;;Request inhibit status;230
 ;;;;;;;;Bit 13;
 ;;;;;;;;Bit 14;
 ;;;;;;;;Bit 15;
-E5;Read buffered credit or error codes;;;;;;;;229
+E5;Read buffered credit or error codes;;;;;;;buffered credit or error codes;229
 ;;;;;1;number;;event counter;
 ;;;;;?;data;;[result 1A][result 1B]..[result nA][result nB];
 E4;Modify master inhibit status;;;;;;;Modify master inhibit status [ACK];228
 ;master inhibit status;1;bitfield;;;;;;
-;Bit 0;;;;;;;;
-;Bit 1;;;;;;;;
-;Bit 2;;;;;;;;
-;Bit 3;;;;;;;;
-;Bit 4;;;;;;;;
-;Bit 5;;;;;;;;
-;Bit 6;;;;;;;;
-;Bit 7;;;;;;;;
+;Bit 0 (used);;;;;;;;
+;Bit 1 (not used);;;;;;;;
+;Bit 2 (not used);;;;;;;;
+;Bit 3 (not used);;;;;;;;
+;Bit 4 (not used);;;;;;;;
+;Bit 5 (not used);;;;;;;;
+;Bit 6 (not used);;;;;;;;
+;Bit 7 (not used);;;;;;;;
 E3;Request master inhibit status;;;;;;;Request master inhibit status;227
-;;;;;1;bitfield;;;
-;;;;;;;;Bit 8;
-;;;;;;;;Bit 9;
-;;;;;;;;Bit 10;
-;;;;;;;;Bit 11;
-;;;;;;;;Bit 12;
-;;;;;;;;Bit 13;
-;;;;;;;;Bit 14;
-;;;;;;;;Bit 15;
+;;;;;1;bitfield;;master inhibit status;
+;;;;;;;;Bit 0 (used);
+;;;;;;;;Bit 1 (not used);
+;;;;;;;;Bit 2 (not used);
+;;;;;;;;Bit 3 (not used);
+;;;;;;;;Bit 4 (not used);
+;;;;;;;;Bit 5 (not used);
+;;;;;;;;Bit 6 (not used);
+;;;;;;;;Bit 7 (not used);
 E2;Request insertion counter;;;;;;;Request insertion counter;226
 ;;;;;3;number;;Count [LSB]..[MSB];
 E1;Request accept counter;;;;;;;Request accept counter;225
@@ -325,8 +325,21 @@ D0;Modify payout absolute count;;;;;;;Modify payout absolute count [ACK];208
 ;no. of coins;2;number;;;;;;
 CF;Request payout absolute count;;;;;;;;207
 ;hopper no.;?;number;;2;number;;no. of coins;
-CE;;;;;;;;;206
-CD;;;;;;;;;205
+CE;Empty payout;;;;;;;Empty payout [ACK];206
+;hopper no.;?;number;;?;number;;status code;
+CD;Request audit information block;;;;;;;Request audit information block;205
+;;;;;?;data;;[ coins in hopper 1A ] [ coins in hopper 1B ]
+[ coins in hopper 2A ] [ coins in hopper 2B ]
+[ coins in hopper 3A ] [ coins in hopper 3B ]
+[ coins to cashbox A ] [ coin to cashbox B ] [ coins to cashbox C ]
+[ coins accepted A ] [ coins accepted B ] [ coins accepted C ]
+[ coins rejected A ] [ coins rejected B ] [ coins rejected C ]
+[ coins paid hop. 1A ] [ coins paid hop. 1B ] [ coins paid hop. 1C ]
+[ coins paid hop. 2A ] [ coins paid hop. 2B ] [ coins paid hop. 2C ]
+[ coins paid hop. 3A ] [ coins paid hop. 3B ] [ coins paid hop. 3C ]
+[ value to cashbox A ] [ value to cashbox B ]
+[ value to cashbox C ] [ value to cashbox D ]
+[ coin value scaling factor ];
 CC;Meter control;;;;;;;Meter control [ACK];204
 ;mode;1;number;;?;number;;Count [LSB]..[MSB];
 ;set meter to value;;;0;;;;;

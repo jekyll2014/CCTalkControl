@@ -472,7 +472,7 @@
             this.textBox_deviceAddress.Name = "textBox_deviceAddress";
             this.textBox_deviceAddress.Size = new System.Drawing.Size(80, 20);
             this.textBox_deviceAddress.TabIndex = 14;
-            this.textBox_deviceAddress.Text = "3";
+            this.textBox_deviceAddress.Text = "0";
             // 
             // textBox_hostAddress
             // 
