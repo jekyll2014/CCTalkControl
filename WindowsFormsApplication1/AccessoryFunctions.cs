@@ -463,7 +463,7 @@ public partial class Accessory
         }
     }
 
-    public bool ArrayEqual(byte[] a1, byte[] b1)
+    public static bool ByteArrayCompare(byte[] a1, byte[] b1)
     {
         if (a1.Length != b1.Length)
         {
@@ -480,7 +480,7 @@ public partial class Accessory
         return true;
     }
 
-    byte crcCalc(byte[] instr)
+    public static byte crcCalc(byte[] instr)
     {
         byte crc = 0x00;
         int i = 0;
@@ -503,14 +503,14 @@ public partial class Accessory
         return (crc);
     }
 
-        private string CorrectFloatPoint(string s)
-        {
-            if (System.Globalization.NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator == ".")
-                s = s.Replace(",", System.Globalization.NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator);
-            else
-                s = s.Replace(".", System.Globalization.NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator);
-            return s;
-        }
+    public static string CorrectFloatPoint(string s)
+    {
+        if (NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator == ".")
+            s = s.Replace(",", NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator);
+        else
+            s = s.Replace(".", NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator);
+        return s;
+    }
 
     /*    
     string[] ports = System.IO.Ports.SerialPort.GetPortNames();
@@ -520,14 +520,14 @@ public partial class Accessory
         portDesc.Add(PortNames[s].ToString() + ": " + s);
     } 
     */
-    Hashtable BuildPortNameHash(string[] oPortsToMap)
+    public static Hashtable BuildPortNameHash(string[] oPortsToMap)
     {
         Hashtable oReturnTable = new Hashtable();
         MineRegistryForPortName("SYSTEM\\CurrentControlSet\\Enum", oReturnTable, oPortsToMap);
         return oReturnTable;
     }
 
-    void MineRegistryForPortName(string strStartKey, Hashtable oTargetMap, string[] oPortNamesToMatch)
+    private static void MineRegistryForPortName(string strStartKey, Hashtable oTargetMap, string[] oPortNamesToMatch)
     {
         if (oTargetMap.Count >= oPortNamesToMatch.Length)
             return;
