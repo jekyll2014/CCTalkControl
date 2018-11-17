@@ -13,7 +13,8 @@ public class ParseEscPos
     //source of the command description (DataTable)
     public static DataTable commandDataBase = new DataTable(); //in Init()
     public static byte deviceAddress = 0; //in Init()
-    public static byte hostAddress = 0; //in Init()
+    public static byte hostAddress = 1; //in Init()
+    public static byte CrcType = 0;
 
     //INTERNAL VARIABLES
     //Command list preselected
@@ -60,6 +61,13 @@ public class ParseEscPos
 
     //Length of command+parameters text
     public static int commandBlockLength = 0;
+
+    public class CrcTypes
+    {
+        public static byte SimpleCRC = 0;
+        public static byte CRC8 = 1;
+        public static byte CRC16 = 2;
+    }
 
     public class CSVColumns
     {
@@ -141,8 +149,14 @@ public class ParseEscPos
                         commandFramePosition = _pos;
                         //get CRC of the frame
                         //check length of sourceData
-                        int calculatedCRC = SimpleCRC(sourceData.GetRange(_pos - 3, dataFrameLength + 4).ToArray(), dataFrameLength + 4);
-                        int sentCRC = sourceData[_pos + dataFrameLength + 1];
+                        byte[] calculatedCRC = GetCRC(sourceData.GetRange(_pos - 3, dataFrameLength + 4).ToArray(), dataFrameLength + 4);
+                        byte[] sentCRC = new byte[2];
+                        if (CrcType == CrcTypes.SimpleCRC || CrcType == CrcTypes.CRC8) sentCRC[0] = sourceData[_pos + dataFrameLength + 1];
+                        else if (CrcType == CrcTypes.CRC16)
+                        {
+                            sentCRC[0] = sourceData[_pos + 2];
+                            sentCRC[1] = sourceData[_pos + dataFrameLength + 1];
+                        }
                         if (calculatedCRC != sentCRC) crcFailed = true;
                         else crcFailed = false;
                         //check command height - how many rows are occupated
@@ -421,6 +435,14 @@ public class ParseEscPos
         return commandBlockLength;
     }
 
+    public static byte[] GetCRC(byte[] data, int length)
+    {
+        if (CrcType == CrcTypes.SimpleCRC) return new byte[2] { SimpleCRC(data, length), 0 };
+        else if (CrcType == CrcTypes.CRC8) return new byte[2] { CRC8(data, length), 0 };
+        else if (CrcType == CrcTypes.CRC16) return CRC16(data, length);
+        return null;
+    }
+
     public static byte SimpleCRC(byte[] data, int length)
     {
         byte sum = 0;
@@ -429,6 +451,25 @@ public class ParseEscPos
             sum += data[i];
         }
         return (byte)(256 - sum);
+    }
+
+    public static byte CRC8(byte[] data, int length)
+    {
+        byte sum = 0;
+        for (int i = 0; i < length; i++)
+        {
+            sum += data[i];
+        }
+        return (byte)(256 - sum);
+    }
+
+    public static byte[] CRC16(byte[] data, int length)
+    {
+        byte[] sum = new byte[2];
+
+
+
+        return sum;
     }
 
     public static string RawToString(byte[] b, byte n)

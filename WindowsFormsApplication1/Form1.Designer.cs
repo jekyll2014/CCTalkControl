@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView_commands = new System.Windows.Forms.DataGridView();
             this.button_next = new System.Windows.Forms.Button();
             this.button_find = new System.Windows.Forms.Button();
@@ -86,6 +86,7 @@
             this.contextMenuStrip_dataBase = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newCommandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBox_CrcType = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_commands)).BeginInit();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -110,14 +111,14 @@
             this.dataGridView_commands.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.dataGridView_commands.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridView_commands.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView_commands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_commands.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dataGridView_commands.Location = new System.Drawing.Point(0, 0);
@@ -272,6 +273,7 @@
             this.toolStripComboBox_PortDataBits,
             this.toolStripComboBox_PortParity,
             this.toolStripComboBox_PortStopBits,
+            this.toolStripComboBox_CrcType,
             this.toolStripMenuItem_TimeOut,
             this.toolStripMenuItem_Connect});
             this.COMPortToolStripMenuItem.Name = "COMPortToolStripMenuItem";
@@ -281,11 +283,13 @@
             // 
             // toolStripComboBox_PortName
             // 
+            this.toolStripComboBox_PortName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBox_PortName.Name = "toolStripComboBox_PortName";
             this.toolStripComboBox_PortName.Size = new System.Drawing.Size(121, 23);
             // 
             // toolStripComboBox_PortSpeed
             // 
+            this.toolStripComboBox_PortSpeed.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBox_PortSpeed.Items.AddRange(new object[] {
             "250000",
             "230400",
@@ -304,11 +308,13 @@
             // 
             // toolStripComboBox_PortHandshake
             // 
+            this.toolStripComboBox_PortHandshake.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBox_PortHandshake.Name = "toolStripComboBox_PortHandshake";
             this.toolStripComboBox_PortHandshake.Size = new System.Drawing.Size(121, 23);
             // 
             // toolStripComboBox_PortDataBits
             // 
+            this.toolStripComboBox_PortDataBits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBox_PortDataBits.Items.AddRange(new object[] {
             "8",
             "7",
@@ -319,11 +325,13 @@
             // 
             // toolStripComboBox_PortParity
             // 
+            this.toolStripComboBox_PortParity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBox_PortParity.Name = "toolStripComboBox_PortParity";
             this.toolStripComboBox_PortParity.Size = new System.Drawing.Size(121, 23);
             // 
             // toolStripComboBox_PortStopBits
             // 
+            this.toolStripComboBox_PortStopBits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBox_PortStopBits.Name = "toolStripComboBox_PortStopBits";
             this.toolStripComboBox_PortStopBits.Size = new System.Drawing.Size(121, 23);
             // 
@@ -479,6 +487,7 @@
             this.textBox_hostAddress.Location = new System.Drawing.Point(2, 156);
             this.textBox_hostAddress.MaxLength = 9;
             this.textBox_hostAddress.Name = "textBox_hostAddress";
+            this.textBox_hostAddress.ReadOnly = true;
             this.textBox_hostAddress.Size = new System.Drawing.Size(80, 20);
             this.textBox_hostAddress.TabIndex = 14;
             this.textBox_hostAddress.Text = "1";
@@ -666,6 +675,17 @@
             this.findThisToolStripMenuItem.Text = "Find this";
             this.findThisToolStripMenuItem.Click += new System.EventHandler(this.FindThisToolStripMenuItem_Click);
             // 
+            // toolStripComboBox_CrcType
+            // 
+            this.toolStripComboBox_CrcType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBox_CrcType.Items.AddRange(new object[] {
+            "SimpleCRC",
+            "CRC8",
+            "CRC16"});
+            this.toolStripComboBox_CrcType.Name = "toolStripComboBox_CrcType";
+            this.toolStripComboBox_CrcType.Size = new System.Drawing.Size(121, 23);
+            this.toolStripComboBox_CrcType.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox_CrcType_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -753,6 +773,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripMenuItem showIncorrectRepliesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoParseReplyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox_CrcType;
     }
 }
 

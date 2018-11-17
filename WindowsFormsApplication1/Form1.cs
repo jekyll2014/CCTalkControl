@@ -124,7 +124,15 @@ namespace WindowsFormsApplication1
             //0xFD (Address poll) command always to be sent to adress 0
             if (data[2] == 0xfd) data[0] = 0;
             data[1] = (byte)(data.Count - 3);
-            data.Add(ParseEscPos.SimpleCRC(data.ToArray(), data.Count));
+            if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.SimpleCRC) data.Add(ParseEscPos.GetCRC(data.ToArray(), data.Count)[0]);
+            else if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC8) data.Add(ParseEscPos.GetCRC(data.ToArray(), data.Count)[0]);
+            else if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC16)
+            {
+                byte[] crc = ParseEscPos.GetCRC(data.ToArray(), data.Count);
+                data[2] = crc[0];
+                data.Add(crc[1]);
+            }
+
             command backData = new command();
             backData.data = data.ToArray();
             backData.type = commandType.Command;
@@ -138,6 +146,7 @@ namespace WindowsFormsApplication1
         public Form1()
         {
             InitializeComponent();
+            toolStripComboBox_CrcType.SelectedIndex = 0;
             commandsCSV_ToolStripTextBox.Text = CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile;
             ReadCsv(commandsCSV_ToolStripTextBox.Text, CommandDatabase);
             for (int i = 0; i < CommandDatabase.Rows.Count; i++) CommandDatabase.Rows[i][0] = Accessory.CheckHexString(CommandDatabase.Rows[i][0].ToString());
@@ -183,6 +192,7 @@ namespace WindowsFormsApplication1
             byte.TryParse(textBox_hostAddress.Text, out hostAddress);
             ParseEscPos.deviceAddress = deviceAddress;
             ParseEscPos.hostAddress = hostAddress;
+            ParseEscPos.CrcType = (byte)toolStripComboBox_CrcType.SelectedIndex;
             int lineNum = -1;
             if (sender == findThisToolStripMenuItem && dataGridView_commands.CurrentCell != null) lineNum = dataGridView_commands.CurrentCell.RowIndex;
             byte command = 0;
@@ -384,9 +394,11 @@ namespace WindowsFormsApplication1
                     {
                         command tmp = new command();
                         tmp.data = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(s));
-                        if (tmp.data[2] == 1) tmp.type = commandType.Command;
+                        //if command
+                        if (tmp.data[2] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Command;
                         // if reply to host
-                        else if (tmp.data[0] == 1) tmp.type = commandType.Command;
+                        else if (tmp.data[0] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Reply;
+                        //if length is not correct or source/destination address not host(always 1)
                         else tmp.type = commandType.Unrecognized;
                         commandList.Add(tmp);
                         listBox_code.Items.Add(commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data));
@@ -690,9 +702,22 @@ namespace WindowsFormsApplication1
             //Ctrl-Ins - copy string to clipboard
             else if (e.Control && e.KeyCode == Keys.Insert && listBox_code.SelectedItem.ToString() != "") Clipboard.SetText(listBox_code.SelectedItem.ToString());
             //Ctrl-V - insert string from clipboard
-            else if (e.Control && e.KeyCode == Keys.V && Accessory.GetStringFormat(Clipboard.GetText()) == 16) listBox_code.Items[listBox_code.SelectedIndex] = Accessory.CheckHexString(Clipboard.GetText());
             //Shift-Ins - insert string from clipboard
-            else if (e.Shift && e.KeyCode == Keys.Insert && Accessory.GetStringFormat(Clipboard.GetText()) == 16) listBox_code.Items[listBox_code.SelectedIndex] = Accessory.CheckHexString(Clipboard.GetText());
+            else if (e.Control && e.KeyCode == Keys.V && Accessory.GetStringFormat(Clipboard.GetText()) == 16 ||
+             e.Shift && e.KeyCode == Keys.Insert && Accessory.GetStringFormat(Clipboard.GetText()) == 16)
+            {
+                command tmp = new command();
+                tmp.data = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(Clipboard.GetText()));
+                //if command
+                if (tmp.data[2] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Command;
+                // if reply to host
+                else if (tmp.data[0] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Reply;
+                //if unknown
+                else tmp.type = commandType.Unrecognized;
+                commandList.Add(tmp);
+
+                listBox_code.Items[listBox_code.SelectedIndex] = commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data);
+            }
             //DEL - delete string
             else if (e.KeyCode == Keys.Delete)
             {
@@ -864,8 +889,16 @@ namespace WindowsFormsApplication1
                                 if (_rxBytes.Count >= _frameLength + 5)
                                 {
                                     _frameOK = true;
-                                    byte crc = ParseEscPos.SimpleCRC(_rxBytes.GetRange(0, _rxBytes.Count - 1).ToArray(), _rxBytes.Count - 1);
-                                    if (crc != _rxBytes[_rxBytes.Count - 1]) _crcError = true;
+                                    byte[] crc = new byte[2];
+                                    crc = ParseEscPos.GetCRC(_rxBytes.GetRange(0, _rxBytes.Count - 1).ToArray(), _rxBytes.Count - 1);
+                                    if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.SimpleCRC || toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC8)
+                                    {
+                                        if (crc[0] != _rxBytes[_rxBytes.Count - 1]) _crcError = true;
+                                    }
+                                    else if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC16)
+                                    {
+                                        if (crc[1] != _rxBytes[_rxBytes.Count - 1] || crc[0] != _rxBytes[2]) _crcError = true;
+                                    }
                                 }
                             }
                             else if (SerialPort1.BytesToRead > 0)
@@ -1070,6 +1103,11 @@ namespace WindowsFormsApplication1
                     i--;
                 }
             }
+        }
+
+        private void toolStripComboBox_CrcType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ParseEscPos.CrcType = (byte)toolStripComboBox_CrcType.SelectedIndex;
         }
 
         #endregion
