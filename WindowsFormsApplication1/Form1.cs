@@ -36,6 +36,8 @@ namespace WindowsFormsApplication1
             public int type;
             public byte[] data;
         }
+
+        //no hex-recognizable chars allowed (0-9, a-f)
         private string[] commandMark = new string[] { "> ", "< ", "? " };
         private List<command> commandList = new List<command>();
 
