@@ -12,7 +12,7 @@ namespace WindowsFormsApplication1
     {
         private DataTable CommandDatabase = new DataTable();
         private DataTable ResultDatabase = new DataTable();
-        private string SourceFile = "default.txt";
+        private string SourceFile = "default.cct";
         private int SerialtimeOut = 3000;
 
         public class ResultColumns
@@ -24,37 +24,22 @@ namespace WindowsFormsApplication1
             public static int Raw { get; set; } = 4;
         }
 
-        public Form1()
+        private class commandType
         {
-            InitializeComponent();
-            //listBox_code.Items.Add("");
-            //listBox_code.SelectedIndex = 0;
-            commandsCSV_ToolStripTextBox.Text = CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile;
-            ReadCsv(commandsCSV_ToolStripTextBox.Text, CommandDatabase);
-            for (int i = 0; i < CommandDatabase.Rows.Count; i++) CommandDatabase.Rows[i][0] = Accessory.CheckHexString(CommandDatabase.Rows[i][0].ToString());
-            dataGridView_commands.DataSource = CommandDatabase;
-
-            dataGridView_result.DataSource = ResultDatabase;
-            dataGridView_commands.ReadOnly = true;
-            ResultDatabase.Columns.Add("Desc");
-            ResultDatabase.Columns.Add("Value");
-            ResultDatabase.Columns.Add("Type");
-            ResultDatabase.Columns.Add("Length");
-            ResultDatabase.Columns.Add("Raw");
-
-            ParseEscPos.commandDataBase = CommandDatabase;
-            for (int i = 0; i < dataGridView_commands.Columns.Count; i++) dataGridView_commands.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
-            for (int i = 0; i < dataGridView_result.Columns.Count; i++) dataGridView_result.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
-            dataGridView_result.Columns[ResultColumns.Description].ReadOnly = true;
-            dataGridView_result.Columns[ResultColumns.Value].ReadOnly = false;
-            dataGridView_result.Columns[ResultColumns.Type].ReadOnly = true;
-            dataGridView_result.Columns[ResultColumns.Length].ReadOnly = true;
-            dataGridView_result.Columns[ResultColumns.Raw].ReadOnly = false;
-            SerialPopulate();
-            toolStripTextBox_TimeOut.Text = SerialtimeOut.ToString();
-            listBox_code.ContextMenuStrip = contextMenuStrip_code;
-            dataGridView_commands.ContextMenuStrip = contextMenuStrip_dataBase;
+            public static int Command = 0;
+            public static int Reply = 1;
+            public static int Unrecognized = 2;
         }
+
+        private struct command
+        {
+            public int type;
+            public byte[] data;
+        }
+        private string[] commandMark = new string[] { "> ", "< ", "? " };
+        private List<command> commandList = new List<command>();
+
+        #region Utilities
 
         public void ReadCsv(string fileName, DataTable table)
         {
@@ -124,17 +109,74 @@ namespace WindowsFormsApplication1
             inputFile.Close();
         }
 
+        private command CollectCommand()
+        {
+            //combine [dest] + [length] + [src] + [cmd] + [data] + [crc]
+            string tmpData = "";
+            List<byte> data = new List<byte>() { 0, 0, 0 };
+            byte b = 0;
+            byte.TryParse(textBox_deviceAddress.Text, out b);
+            data[0] = b;
+            byte.TryParse(textBox_hostAddress.Text, out b);
+            data[2] = b;
+            for (int i = 0; i < ResultDatabase.Rows.Count; i++) tmpData += ResultDatabase.Rows[i][ResultColumns.Raw].ToString();
+            data.AddRange(Accessory.ConvertHexToByteArray(tmpData));
+            //0xFD (Address poll) command always to be sent to adress 0
+            if (data[2] == 0xfd) data[0] = 0;
+            data[1] = (byte)(data.Count - 3);
+            data.Add(ParseEscPos.SimpleCRC(data.ToArray(), data.Count));
+            command backData = new command();
+            backData.data = data.ToArray();
+            backData.type = commandType.Command;
+            return backData;
+        }
+
+        #endregion
+
+        #region GUI management
+
+        public Form1()
+        {
+            InitializeComponent();
+            commandsCSV_ToolStripTextBox.Text = CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile;
+            ReadCsv(commandsCSV_ToolStripTextBox.Text, CommandDatabase);
+            for (int i = 0; i < CommandDatabase.Rows.Count; i++) CommandDatabase.Rows[i][0] = Accessory.CheckHexString(CommandDatabase.Rows[i][0].ToString());
+            dataGridView_commands.DataSource = CommandDatabase;
+
+            dataGridView_result.DataSource = ResultDatabase;
+            dataGridView_commands.ReadOnly = true;
+            ResultDatabase.Columns.Add("Desc");
+            ResultDatabase.Columns.Add("Value");
+            ResultDatabase.Columns.Add("Type");
+            ResultDatabase.Columns.Add("Length");
+            ResultDatabase.Columns.Add("Raw");
+
+            ParseEscPos.commandDataBase = CommandDatabase;
+            for (int i = 0; i < dataGridView_commands.Columns.Count; i++) dataGridView_commands.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+            for (int i = 0; i < dataGridView_result.Columns.Count; i++) dataGridView_result.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridView_result.Columns[ResultColumns.Description].ReadOnly = true;
+            dataGridView_result.Columns[ResultColumns.Value].ReadOnly = false;
+            dataGridView_result.Columns[ResultColumns.Type].ReadOnly = true;
+            dataGridView_result.Columns[ResultColumns.Length].ReadOnly = true;
+            dataGridView_result.Columns[ResultColumns.Raw].ReadOnly = false;
+            SerialPopulate();
+            toolStripTextBox_TimeOut.Text = SerialtimeOut.ToString();
+            listBox_code.ContextMenuStrip = contextMenuStrip_code;
+            dataGridView_commands.ContextMenuStrip = contextMenuStrip_dataBase;
+        }
+
         private void Button_find_Click(object sender, EventArgs e)
         {
             if (listBox_code.SelectedIndex == -1) return;
 
             //clear the string to be decoded
-            string str = Accessory.CheckHexString(listBox_code.SelectedItem.ToString());
+            byte[] data = commandList[listBox_code.SelectedIndex].data;
+            int cmdType = commandList[listBox_code.SelectedIndex].type;
 
             ResultDatabase.Clear();
             textBox_search.Clear();
             ParseEscPos.sourceData.Clear();
-            ParseEscPos.sourceData.AddRange(Accessory.ConvertHexToByteArray(str));
+            ParseEscPos.sourceData.AddRange(data);
             byte deviceAddress = 0;
             byte hostAddress = 0;
             byte.TryParse(textBox_deviceAddress.Text, out deviceAddress);
@@ -145,19 +187,20 @@ namespace WindowsFormsApplication1
             if (sender == findThisToolStripMenuItem && dataGridView_commands.CurrentCell != null) lineNum = dataGridView_commands.CurrentCell.RowIndex;
             byte command = 0;
 
-            if (str.Length >= 9)
+            if (data.Length >= 5)
             {
                 //check if it's a command or reply
 
                 // if command from host
-                if (Accessory.ConvertHexToByte(str.Substring(6, 3)) == hostAddress)
+                if (data[2] == hostAddress)
                 {
-                    command = Accessory.ConvertHexToByte(str.Substring(9, 3));
+                    command = data[3];
                 }
                 // if reply to host
-                else if (Accessory.ConvertHexToByte(str.Substring(0, 3)) == hostAddress)
+                else if (data[0] == hostAddress)
                 {
-                    if (listBox_code.SelectedIndex > 0) command = Accessory.ConvertHexToByte(Accessory.CheckHexString(listBox_code.Items[listBox_code.SelectedIndex - 1].ToString()).Substring(9, 3)); //reply
+                    //assume previous string is a command and take command from it
+                    if (listBox_code.SelectedIndex > 0) command = commandList[listBox_code.SelectedIndex - 1].data[3];
                     else return;
                 }
                 else
@@ -202,22 +245,20 @@ namespace WindowsFormsApplication1
                         }
                     }
                 }
-                else  //no command found. consider it's a string
+                else  //no command found. consider it an unknown string
                 {
                     DataRow row = ResultDatabase.NewRow();
-                    int i = 3;
+                    int i = 1;
                     while (!ParseEscPos.FindCommand(i, command) &&
-                        i < str.Length) //looking for a non-parseable part end
+                        i < data.Length) //looking for a non-parseable part end
                     {
-                        i += 3;
+                        i++;
                     }
                     ParseEscPos.commandName = "";
                     row[ResultColumns.Value] += "";
-                    row[ResultColumns.Value] += "\"" + str + "\"";
+                    row[ResultColumns.Value] += "\"" + Accessory.ConvertByteArrayToHex(data) + "\"";
                     dataGridView_commands.CurrentCell = dataGridView_commands.Rows[0].Cells[0];
-                    //dataGridView_commands.FirstDisplayedCell = dataGridView_commands.CurrentCell;
-                    //dataGridView_commands.Refresh();
-                    if (Accessory.PrintableHex(str)) row[ResultColumns.Description] = "\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(Accessory.ConvertHexToByteArray(str)) + "\"";
+                    if (Accessory.PrintableByteArray(data)) row[ResultColumns.Description] = "\"" + Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage).GetString(data) + "\"";
                 }
             }
         }
@@ -335,10 +376,21 @@ namespace WindowsFormsApplication1
             if (openFileDialog.Title == "Open HEX file") //hex text read
             {
                 SourceFile = openFileDialog.FileName;
+                commandList.Clear();
                 listBox_code.Items.Clear();
                 try
                 {
-                    foreach (string s in File.ReadAllLines(SourceFile)) listBox_code.Items.Add(Accessory.CheckHexString(s));
+                    foreach (string s in File.ReadAllLines(SourceFile))
+                    {
+                        command tmp = new command();
+                        tmp.data = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(s));
+                        if (tmp.data[2] == 1) tmp.type = commandType.Command;
+                        // if reply to host
+                        else if (tmp.data[0] == 1) tmp.type = commandType.Command;
+                        else tmp.type = commandType.Unrecognized;
+                        commandList.Add(tmp);
+                        listBox_code.Items.Add(commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -505,36 +557,28 @@ namespace WindowsFormsApplication1
             Button_newCommand_Click(this, EventArgs.Empty);
         }
 
-        private string CollectCommand()
-        {
-            //combine [dest] + [length] + [src] + [cmd] + [data] + [crc]
-            string data = "";
-            byte[] header = { 0, 0, 0 };
-            byte.TryParse(textBox_deviceAddress.Text, out header[0]);
-            byte.TryParse(textBox_hostAddress.Text, out header[2]);
-            for (int i = 0; i < ResultDatabase.Rows.Count; i++) data += ResultDatabase.Rows[i][ResultColumns.Raw].ToString();
-            header[1] = (byte)((data.Length / 3) - 1);
-            data = Accessory.ConvertByteArrayToHex(header) + data;
-            byte[] dataByte = Accessory.ConvertHexToByteArray(data);
-            return ("> " + data + Accessory.ConvertByteToHex(ParseEscPos.SimpleCRC(dataByte, dataByte.Length)));
-        }
-
         private void Button_add_Click(object sender, EventArgs e)
         {
-            listBox_code.Items.Add(CollectCommand());
+            command tmp = CollectCommand();
+            commandList.Add(tmp);
+            listBox_code.Items.Add(commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data));
             listBox_code.SelectedIndex = listBox_code.Items.Count - 1;
         }
 
         private void Button_replace_Click(object sender, EventArgs e)
         {
             if (listBox_code.SelectedIndex == -1) return;
-            listBox_code.Items[listBox_code.SelectedIndex] = CollectCommand();
+            command tmp = CollectCommand();
+            commandList[listBox_code.SelectedIndex] = tmp;
+            listBox_code.Items[listBox_code.SelectedIndex] = commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(commandList[listBox_code.SelectedIndex].data);
         }
 
         private void Button_insert_Click(object sender, EventArgs e)
         {
             if (listBox_code.SelectedIndex == -1) return;
-            listBox_code.Items.Insert(listBox_code.SelectedIndex, CollectCommand());
+            command tmp = CollectCommand();
+            commandList.Insert(listBox_code.SelectedIndex, tmp);
+            listBox_code.Items.Insert(listBox_code.SelectedIndex, commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(commandList[listBox_code.SelectedIndex].data));
             listBox_code.SelectedIndex--;
         }
 
@@ -789,7 +833,7 @@ namespace WindowsFormsApplication1
                             {
                                 _rxBytes.Add((byte)SerialPort1.ReadByte());
                             }
-                            if (ArrayEqual(_rxBytes.ToArray(), _txBytes))
+                            if (Accessory.ByteArrayCompare(_rxBytes.ToArray(), _txBytes))
                             {
                                 dupeDeleted = true;
                                 _rxBytes.Clear();
@@ -837,30 +881,35 @@ namespace WindowsFormsApplication1
                 }
                 if (_frameOK || showIncorrectRepliesToolStripMenuItem.Checked)
                 {
-                    string _prefix = "< ";
-                    if (!_frameOK || _notReply || _crcError) _prefix = "! ";
-                    string data = _prefix + Accessory.ConvertByteArrayToHex(_rxBytes.ToArray());
+                    command tmp = new command();
+                    tmp.type = commandType.Reply;
+                    if (!_frameOK || _notReply || _crcError) tmp.type = commandType.Unrecognized;
+                    tmp.data = _rxBytes.ToArray();
                     //if command line is the last - add reply to the bottom of the list
                     if (listBox_code.SelectedIndex + 1 >= listBox_code.Items.Count)
                     {
-                        listBox_code.Items.Add(data);
+                        commandList.Add(tmp);
+                        listBox_code.Items.Add(commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data));
                     }
                     //if next item in the list is reply (supposed to be previous reply) - replace it with new reply
-                    else if (Accessory.CheckHexString(listBox_code.Items[listBox_code.SelectedIndex + 1].ToString()).Length >= 9 &&
-                    Accessory.CheckHexString(listBox_code.Items[listBox_code.SelectedIndex + 1].ToString()).Substring(0, 3) == Accessory.ConvertByteToHex(hostAddress) &&
-                    Accessory.CheckHexString(listBox_code.Items[listBox_code.SelectedIndex + 1].ToString()).Substring(6, 3) == Accessory.ConvertByteToHex(deviceAddress))
+                    else if (commandList[listBox_code.SelectedIndex + 1].data.Length >= 3 &&
+                    commandList[listBox_code.SelectedIndex + 1].data[0] == hostAddress &&
+                    commandList[listBox_code.SelectedIndex + 1].data[2] == deviceAddress)
                     {
-                        listBox_code.Items[listBox_code.SelectedIndex + 1] = data;
+                        commandList[listBox_code.SelectedIndex + 1] = tmp;
+                        listBox_code.Items[listBox_code.SelectedIndex + 1] = commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data);
                     }
                     //if next item in the list is empty (supposed to be previous incorrect reply) - replace it with new reply
-                    else if (Accessory.CheckHexString(listBox_code.Items[listBox_code.SelectedIndex + 1].ToString()) == "")
+                    else if (commandList[listBox_code.SelectedIndex + 1].data.Length == 0)
                     {
-                        listBox_code.Items[listBox_code.SelectedIndex + 1] = data;
+                        commandList[listBox_code.SelectedIndex + 1] = tmp;
+                        listBox_code.Items[listBox_code.SelectedIndex + 1] = commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data);
                     }
                     //or insert new reply next line to command
                     else
                     {
-                        listBox_code.Items.Insert(listBox_code.SelectedIndex + 1, data);
+                        commandList.Insert(listBox_code.SelectedIndex + 1, tmp);
+                        listBox_code.Items.Insert(listBox_code.SelectedIndex + 1, commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data));
                     }
                     if (autoParseReplyToolStripMenuItem.Checked) Button_next_Click(this, EventArgs.Empty);
                 }
@@ -995,23 +1044,6 @@ namespace WindowsFormsApplication1
             if (toolStripComboBox_PortName.Enabled) SerialPopulate();
         }
 
-        public bool ArrayEqual(byte[] a1, byte[] b1)
-        {
-            if (a1.Length != b1.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < a1.Length; i++)
-            {
-                if (a1[i] != b1[i])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         private void showIncorrectRepliesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showIncorrectRepliesToolStripMenuItem.Checked = !showIncorrectRepliesToolStripMenuItem.Checked;
@@ -1039,6 +1071,8 @@ namespace WindowsFormsApplication1
                 }
             }
         }
+
+        #endregion
 
     }
 }

@@ -398,14 +398,15 @@ public partial class Accessory
         return Encoding.GetEncoding(codePage).GetString(byteArr);
     }
 
-    public static string FilterZeroChar(string m)
+    public static string FilterZeroChar(string m, bool replaceWithSpace = true)
     {
-        string n = "";
+        StringBuilder n = new StringBuilder();
         for (int i = 0; i < m.Length; i++)
         {
-            if (m[i] != 0) n += m[i];
+            if (m[i] != 0) n.Append(m[i]);
+            else if (replaceWithSpace) n.Append(" ");
         }
-        return n;
+        return n.ToString();
     }
 
     public static int CountSubString(string str, string subStr)
@@ -488,6 +489,14 @@ public partial class Accessory
             }
         }
         return true;
+    }
+
+    public static byte[] CombineByteArrays(byte[] first, byte[] second)
+    {
+        byte[] ret = new byte[first.Length + second.Length];
+        Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+        Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+        return ret;
     }
 
     public static byte crcCalc(byte[] instr)
