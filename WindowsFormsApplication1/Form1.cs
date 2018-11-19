@@ -16,6 +16,7 @@ namespace WindowsFormsApplication1
         private int SerialtimeOut = 3000;
         private byte deviceAddress = 0;
         private byte hostAddress = 1;
+        private bool flag = false;
 
         public class ResultColumns
         {
@@ -130,8 +131,7 @@ namespace WindowsFormsApplication1
             data[1] = (byte)(data.Count - 4);
             ParseEscPos.CrcType = (byte)toolStripComboBox_CrcType.SelectedIndex;
             byte[] tmpCrc = ParseEscPos.GetCRC(data.ToArray(), data.Count);
-            if (ParseEscPos.CrcType == ParseEscPos.CrcTypes.SimpleCRC ||
-                ParseEscPos.CrcType == ParseEscPos.CrcTypes.CRC8) data.Add(tmpCrc[0]);
+            if (ParseEscPos.CrcType == ParseEscPos.CrcTypes.SimpleCRC) data.Add(tmpCrc[0]);
             else if (ParseEscPos.CrcType == ParseEscPos.CrcTypes.CRC16)
             {
                 byte[] crc = ParseEscPos.GetCRC(data.ToArray(), data.Count);
@@ -152,6 +152,12 @@ namespace WindowsFormsApplication1
         public Form1()
         {
             InitializeComponent();
+            SerialtimeOut = CCTalkControl.Properties.Settings.Default.TimeOut;
+            toolStripTextBox_TimeOut.Text = SerialtimeOut.ToString();
+
+            deviceAddress = CCTalkControl.Properties.Settings.Default.DefaultDeviceAddress;
+            textBox_deviceAddress.Text = deviceAddress.ToString();
+
             toolStripComboBox_CrcType.SelectedIndex = 0;
             commandsCSV_ToolStripTextBox.Text = CCTalkControl.Properties.Settings.Default.CommandsDatabaseFile;
             ReadCsv(commandsCSV_ToolStripTextBox.Text, CommandDatabase);
@@ -175,7 +181,6 @@ namespace WindowsFormsApplication1
             dataGridView_result.Columns[ResultColumns.Length].ReadOnly = true;
             dataGridView_result.Columns[ResultColumns.Raw].ReadOnly = false;
             SerialPopulate();
-            toolStripTextBox_TimeOut.Text = SerialtimeOut.ToString();
             listBox_code.ContextMenuStrip = contextMenuStrip_code;
             dataGridView_commands.ContextMenuStrip = contextMenuStrip_dataBase;
             textBox_deviceAddress_Leave(this, EventArgs.Empty);
@@ -601,6 +606,7 @@ namespace WindowsFormsApplication1
 
         private void Button_clear_Click(object sender, EventArgs e)
         {
+            commandList.Clear();
             listBox_code.Items.Clear();
         }
 
@@ -809,11 +815,16 @@ namespace WindowsFormsApplication1
         {
             if (listBox_code.SelectedIndex < 0 ||
                 commandList.Count <= listBox_code.SelectedIndex ||
-                commandList[listBox_code.SelectedIndex].data.Length < 5) return;
+                commandList[listBox_code.SelectedIndex].data.Length < 5)
+            {
+                flag = true;
+                return;
+            }
 
             byte[] _txBytes = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(listBox_code.SelectedItem.ToString()));
 
-            if (_txBytes.Length >= 5 && _txBytes[0] == hostAddress && _txBytes[2] == deviceAddress && listBox_code.SelectedIndex > 0)
+            //if trying to send reply - get back to command and send it. Not in case it's a "Send All"
+            if (sender != button_SendAll && _txBytes.Length >= 5 && _txBytes[0] == hostAddress && _txBytes[2] == deviceAddress && listBox_code.SelectedIndex > 0)
             {
                 listBox_code.SelectedIndex--;
                 Button_Send_Click(this, EventArgs.Empty);
@@ -897,7 +908,7 @@ namespace WindowsFormsApplication1
                                     _frameOK = true;
                                     byte[] crc = new byte[2];
                                     crc = ParseEscPos.GetCRC(_rxBytes.GetRange(0, _frameLength + 5).ToArray(), _rxBytes.Count - 1);
-                                    if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.SimpleCRC || toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC8)
+                                    if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.SimpleCRC)
                                     {
                                         if (crc[0] != _rxBytes[_rxBytes.Count - 1]) _crcError = true;
                                     }
@@ -953,24 +964,27 @@ namespace WindowsFormsApplication1
                     if (autoParseReplyToolStripMenuItem.Checked) Button_next_Click(this, EventArgs.Empty);
                 }
             }
-            else MessageBox.Show("Incorrect host/device address or data incomplete");
+            else
+            {
+                flag = true;
+                MessageBox.Show("Incorrect host/device address or data incomplete");
+            }
         }
 
         private void Button_SendAll_Click(object sender, EventArgs e)
         {
+            flag = false;
             if (listBox_code.SelectedIndex < 0) listBox_code.SelectedIndex = 0;
             for (int i = listBox_code.SelectedIndex; i < listBox_code.Items.Count; i++)
             {
                 listBox_code.SelectedIndex = i;
                 if (commandList[i].data.Length >= 5) //check minimum packet length
                 {
-                    //if (commandList[i].data[0] == deviceAddress &&
-                    //    commandList[i].data[2] == hostAddress) //if it's a command
-                    //{
                     Button_Send_Click(button_SendAll, EventArgs.Empty);
-                    //}
+                    if (flag) break;
                 }
             }
+            flag = false;
         }
 
         private void SerialPopulate()
@@ -1017,7 +1031,7 @@ namespace WindowsFormsApplication1
 
         private void ToolStripTextBox_TimeOut_TextChanged(object sender, EventArgs e)
         {
-            if (!int.TryParse(toolStripTextBox_TimeOut.Text, out SerialtimeOut)) toolStripTextBox_TimeOut.Text = "1000";
+            if (!int.TryParse(toolStripTextBox_TimeOut.Text, out SerialtimeOut)) toolStripTextBox_TimeOut.Text = "3000";
         }
 
         private void ListBox_code_MouseUp(object sender, MouseEventArgs e)
@@ -1095,15 +1109,11 @@ namespace WindowsFormsApplication1
 
         private void Button_removeReplies_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < listBox_code.Items.Count; i++)
+            for (int i = 0; i < commandList.Count; i++)
             {
-                byte[] _txBytes = Accessory.ConvertHexToByteArray(listBox_code.SelectedItem.ToString());
-                byte deviceAddress = 0;
-                byte hostAddress = 0;
-                byte.TryParse(textBox_deviceAddress.Text, out deviceAddress);
-                byte.TryParse(textBox_hostAddress.Text, out hostAddress);
-                if (_txBytes.Length >= 5 && _txBytes[0] == deviceAddress && _txBytes[2] == hostAddress)
+                if (commandList[i].type == commandType.Reply)
                 {
+                    commandList.RemoveAt(i);
                     listBox_code.Items.RemoveAt(i);
                     i--;
                 }

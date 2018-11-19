@@ -65,8 +65,7 @@ public class ParseEscPos
     public class CrcTypes
     {
         public static byte SimpleCRC = 0;
-        public static byte CRC8 = 1;
-        public static byte CRC16 = 2;
+        public static byte CRC16 = 1;
     }
 
     public class CSVColumns
@@ -154,7 +153,7 @@ public class ParseEscPos
                         byte[] calculatedCRC = GetCRC(sourceData.GetRange(_pos - 3, dataFrameLength + 4).ToArray(), dataFrameLength + 4);
                         byte[] sentCRC = new byte[2];
                         crcFailed = false;
-                        if (CrcType == CrcTypes.SimpleCRC || CrcType == CrcTypes.CRC8)
+                        if (CrcType == CrcTypes.SimpleCRC)
                         {
                             sentCRC[0] = sourceData[_pos + dataFrameLength + 1];
                             if (calculatedCRC[0] != sentCRC[0]) crcFailed = true;
@@ -445,8 +444,7 @@ public class ParseEscPos
     {
         byte[] tmpCrc = new byte[2];
         if (CrcType == CrcTypes.SimpleCRC) tmpCrc[0] = SimpleCRC(data, length);
-        else if (CrcType == CrcTypes.CRC8) tmpCrc[0] = CRC8(data, length);
-        else if (CrcType == CrcTypes.CRC16) tmpCrc = CRC16(data, length);
+        else if (CrcType == CrcTypes.CRC16) tmpCrc = CRC16CCITT(data, length);
         return tmpCrc;
     }
 
@@ -460,23 +458,22 @@ public class ParseEscPos
         return (byte)(256 - sum);
     }
 
-    public static byte CRC8(byte[] data, int length)
+    public static byte[] CRC16CCITT(byte[] data, int length, ushort seed = 0x0000)
     {
-        byte sum = 0;
-        for (int i = 0; i < length; i++)
+        ushort crc = seed;
+        for (int i = 0; i < length; ++i)
         {
-            sum += data[i];
+            crc ^= (ushort)(data[i] << 8);
+            for (int j = 0; j < 8; ++j)
+            {
+                if ((crc & 0x8000) != 0)
+                    crc = (ushort)((crc << 1) ^ 0x1021); // 0001.0000 0010.0001 = x^12 + x^5 + 1(+x ^ 16)
+                else
+                    crc <<= 1;
+            }
         }
-        return (byte)(256 - sum);
-    }
-
-    public static byte[] CRC16(byte[] data, int length)
-    {
-        byte[] sum = new byte[2];
-
-
-
-        return sum;
+        //return BitConverter.GetBytes(crc);
+        return new byte[] { (byte)(crc & 0x00ff), (byte)(crc >> 8) };
     }
 
     public static string RawToString(byte[] b, byte n)
@@ -543,8 +540,6 @@ public class ParseEscPos
 
     public static string StringToRaw(string s, byte n)
     {
-        //while (s.Length < n) s += "\0";
-        //return Accessory.ConvertStringToHex(s, CustomFiscalControl.Properties.Settings.Default.CodePage).Substring(0, n * 3);
         string outStr = Accessory.ConvertStringToHex(s.Substring(1, s.Length - 2), CCTalkControl.Properties.Settings.Default.CodePage);
         if (outStr.Length > n * 3) outStr = outStr.Substring(0, n * 3);
         while (outStr.Length < n * 3) outStr += "00 ";
@@ -630,4 +625,83 @@ public class ParseEscPos
         str += Accessory.ConvertByteToHex(l);
         return str;
     }
+
 }
+
+/* CRC16CCIT versions
+byte[][] Data = new byte[][]{ new byte[]{0x49, 0xD5, 0xF2 }, // CRC-CCITT Checksum = A6B3
+    new byte[]{0x2F, 0xBD, 0x9D }, // CRC-CCITT Checksum = 90B2
+    new byte[]{0xD9, 0x53, 0xD1 }, // CRC-CCITT Checksum = 7BB5
+    new byte[]{0x70, 0xB8, 0xD9, 0x64, 0x04, 0x15 }, // CRC-CCITT Checksum = FB00
+    new byte[]{0x72, 0x61, 0xB9, 0x4E, 0xD0, 0x78 }, // CRC-CCITT Checksum = 93E3
+    new byte[]{0x63, 0xFA, 0xD1, 0x9F, 0xE6, 0x19 }, // CRC-CCITT Checksum = 5BB3
+    };
+    for (int i = 0; i<Data.Count(); i++)
+    {
+        byte[] tmpCrc1 = CRC16CCITT(Data[i], Data[i].Length);
+byte[] tmpCrc2 = CRC16CCITTv2(Data[i], Data[i].Length);
+byte[] tmpCrc3 = CRC16CCITTv3(Data[i], Data[i].Length);
+}
+
+public static byte[] CRC16CCITTv2(byte[] data, int length, ushort initialValue = 0x0000)
+{
+    const ushort poly = 4129;
+    ushort[] table = new ushort[256];
+
+    ushort temp, a;
+    for (int i = 0; i < table.Length; ++i)
+    {
+        temp = 0;
+        a = (ushort)(i << 8);
+        for (int j = 0; j < 8; ++j)
+        {
+            if (((temp ^ a) & 0x8000) != 0)
+            {
+                temp = (ushort)((temp << 1) ^ poly);
+            }
+            else
+            {
+                temp <<= 1;
+            }
+            a <<= 1;
+        }
+        table[i] = temp;
+    }
+
+    ushort crc = initialValue;
+    for (int i = 0; i < length; ++i)
+    {
+        crc = (ushort)((crc << 8) ^ table[((crc >> 8) ^ (0xff & data[i]))]);
+    }
+    return new byte[] { (byte)(crc & 0x00ff), (byte)(crc >> 8) };
+}
+
+public static byte[] CRC16CCITTv3(byte[] data, int length, ushort initialValue = 0x0000)
+{
+    //const ushort poly = 4129;
+    const ushort poly = 0x1021;
+    ushort[] table = new ushort[256];
+    //ushort initialValue = 0xffff;
+    ushort temp, a;
+    ushort crc = initialValue;
+    for (int i = 0; i < table.Length; ++i)
+    {
+        temp = 0;
+        a = (ushort)(i << 8);
+        for (int j = 0; j < 8; ++j)
+        {
+            if (((temp ^ a) & 0x8000) != 0)
+                temp = (ushort)((temp << 1) ^ poly);
+            else
+                temp <<= 1;
+            a <<= 1;
+        }
+        table[i] = temp;
+    }
+    for (int i = 0; i < data.Length; ++i)
+    {
+        crc = (ushort)((crc << 8) ^ table[((crc >> 8) ^ (0xff & data[i]))]);
+    }
+    return BitConverter.GetBytes(crc);
+}
+*/

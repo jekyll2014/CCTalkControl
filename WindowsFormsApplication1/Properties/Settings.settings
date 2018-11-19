@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CustomFiscalControl.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CCTalkControl.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="CodePage" Type="System.Int32" Scope="User">
@@ -10,6 +10,12 @@
     </Setting>
     <Setting Name="CommandsDatabaseFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">cct_commands.csv</Value>
+    </Setting>
+    <Setting Name="TimeOut" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3000</Value>
+    </Setting>
+    <Setting Name="DefaultDeviceAddress" Type="System.Byte" Scope="User">
+      <Value Profile="(Default)">2</Value>
     </Setting>
   </Settings>
 </SettingsFile>
