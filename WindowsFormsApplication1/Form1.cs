@@ -17,6 +17,7 @@ namespace WindowsFormsApplication1
         private byte deviceAddress = 0;
         private byte hostAddress = 1;
         private bool flag = false;
+        private const int minFrameLength = 5;
 
         public class ResultColumns
         {
@@ -40,7 +41,6 @@ namespace WindowsFormsApplication1
             public byte[] data;
         }
 
-        //no hex-recognizable chars allowed (0-9, a-f)
         private string[] commandMark = new string[] { "> ", "< ", "? " };
         private List<command> commandList = new List<command>();
 
@@ -207,7 +207,7 @@ namespace WindowsFormsApplication1
             if (sender == findThisToolStripMenuItem && dataGridView_commands.CurrentCell != null) lineNum = dataGridView_commands.CurrentCell.RowIndex;
             byte command = 0;
 
-            if (data.Length >= 5)
+            if (data.Length >= minFrameLength)
             {
                 //check if it's a command or reply
 
@@ -405,9 +405,9 @@ namespace WindowsFormsApplication1
                         command tmp = new command();
                         tmp.data = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(s));
                         //if command
-                        if (tmp.data[2] == 1 && tmp.data[1] == tmp.data.Length - 5) tmp.type = commandType.Command;
+                        if (tmp.data[2] == hostAddress && tmp.data[1] == tmp.data.Length - minFrameLength) tmp.type = commandType.Command;
                         // if reply to host
-                        else if (tmp.data[0] == 1 && tmp.data[1] == tmp.data.Length - 5) tmp.type = commandType.Reply;
+                        else if (tmp.data[0] == hostAddress && tmp.data[1] == tmp.data.Length - minFrameLength) tmp.type = commandType.Reply;
                         //if length is not correct or source/destination address not host(always 1)
                         else tmp.type = commandType.Unrecognized;
                         commandList.Add(tmp);
@@ -418,11 +418,7 @@ namespace WindowsFormsApplication1
                 {
                     MessageBox.Show("\r\nError reading file " + SourceFile + ": " + ex.Message);
                 }
-                //Form1.ActiveForm.Text += " " + SourceFile;
-                //sourceData.Clear();
-                //sourceData.AddRange(Accessory.ConvertHexToByteArray(textBox_code.Text));
                 listBox_code.SelectedIndex = 0;
-                //ParseEscPos.Init(listBox_code.Items[0].ToString(), CommandDatabase);
             }
             else if (openFileDialog.Title == "Open command CSV database") //hex text read
             {
@@ -720,9 +716,9 @@ namespace WindowsFormsApplication1
                 command tmp = new command();
                 tmp.data = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(Clipboard.GetText()));
                 //if command
-                if (tmp.data[2] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Command;
+                if (tmp.data[2] == hostAddress && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Command;
                 // if reply to host
-                else if (tmp.data[0] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Reply;
+                else if (tmp.data[0] == hostAddress && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Reply;
                 //if unknown
                 else tmp.type = commandType.Unrecognized;
                 commandList.Add(tmp);
@@ -815,7 +811,7 @@ namespace WindowsFormsApplication1
         {
             if (listBox_code.SelectedIndex < 0 ||
                 commandList.Count <= listBox_code.SelectedIndex ||
-                commandList[listBox_code.SelectedIndex].data.Length < 5)
+                commandList[listBox_code.SelectedIndex].data.Length < minFrameLength)
             {
                 flag = true;
                 return;
@@ -824,14 +820,14 @@ namespace WindowsFormsApplication1
             byte[] _txBytes = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(listBox_code.SelectedItem.ToString()));
 
             //if trying to send reply - get back to command and send it. Not in case it's a "Send All"
-            if (sender != button_SendAll && _txBytes.Length >= 5 && _txBytes[0] == hostAddress && _txBytes[2] == deviceAddress && listBox_code.SelectedIndex > 0)
+            if (sender != button_SendAll && _txBytes.Length >= minFrameLength && _txBytes[0] == hostAddress && _txBytes[2] == deviceAddress && listBox_code.SelectedIndex > 0)
             {
                 listBox_code.SelectedIndex--;
                 Button_Send_Click(this, EventArgs.Empty);
                 return;
             }
 
-            if (_txBytes.Length >= 5 && (_txBytes[0] == deviceAddress || _txBytes[0] == 0) && _txBytes[2] == hostAddress)
+            if (_txBytes.Length >= minFrameLength && (_txBytes[0] == deviceAddress || _txBytes[0] == 0) && _txBytes[2] == hostAddress)
             {
                 command tmpCmd = commandList[listBox_code.SelectedIndex];
                 tmpCmd.type = commandType.Command;
@@ -899,15 +895,15 @@ namespace WindowsFormsApplication1
                                 //BUSY
                                 else if (_frameLength == 0 && _rxBytes[3] == ParseEscPos.busySign) _nack = true;
                                 //normal reply
-                                while (SerialPort1.BytesToRead > 0 && _rxBytes.Count < _frameLength + 5)
+                                while (SerialPort1.BytesToRead > 0 && _rxBytes.Count < _frameLength + minFrameLength)
                                 {
                                     _rxBytes.Add((byte)SerialPort1.ReadByte());
                                 }
-                                if (_rxBytes.Count >= _frameLength + 5)
+                                if (_rxBytes.Count >= _frameLength + minFrameLength)
                                 {
                                     _frameOK = true;
                                     byte[] crc = new byte[2];
-                                    crc = ParseEscPos.GetCRC(_rxBytes.GetRange(0, _frameLength + 5).ToArray(), _rxBytes.Count - 1);
+                                    crc = ParseEscPos.GetCRC(_rxBytes.GetRange(0, _frameLength + minFrameLength).ToArray(), _rxBytes.Count - 1);
                                     if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.SimpleCRC)
                                     {
                                         if (crc[0] != _rxBytes[_rxBytes.Count - 1]) _crcError = true;
@@ -978,7 +974,7 @@ namespace WindowsFormsApplication1
             for (int i = listBox_code.SelectedIndex; i < listBox_code.Items.Count; i++)
             {
                 listBox_code.SelectedIndex = i;
-                if (commandList[i].data.Length >= 5) //check minimum packet length
+                if (commandList[i].data.Length >= minFrameLength) //check minimum packet length
                 {
                     Button_Send_Click(button_SendAll, EventArgs.Empty);
                     if (flag) break;
