@@ -147,18 +147,24 @@ public class ParseEscPos
                         commandDbLineNum = i;
                         commandDesc = commandDataBase.Rows[i][CSVColumns.CommandDescription].ToString();
                         commandFramePosition = _pos;
-                        //get CRC of the frame
                         //check length of sourceData
+
+
+                        //get CRC of the frame
                         byte[] calculatedCRC = GetCRC(sourceData.GetRange(_pos - 3, dataFrameLength + 4).ToArray(), dataFrameLength + 4);
                         byte[] sentCRC = new byte[2];
-                        if (CrcType == CrcTypes.SimpleCRC || CrcType == CrcTypes.CRC8) sentCRC[0] = sourceData[_pos + dataFrameLength + 1];
+                        crcFailed = false;
+                        if (CrcType == CrcTypes.SimpleCRC || CrcType == CrcTypes.CRC8)
+                        {
+                            sentCRC[0] = sourceData[_pos + dataFrameLength + 1];
+                            if (calculatedCRC[0] != sentCRC[0]) crcFailed = true;
+                        }
                         else if (CrcType == CrcTypes.CRC16)
                         {
                             sentCRC[0] = sourceData[_pos + 2];
                             sentCRC[1] = sourceData[_pos + dataFrameLength + 1];
+                            if (!Accessory.ByteArrayCompare(calculatedCRC, sentCRC)) crcFailed = true;
                         }
-                        if (calculatedCRC != sentCRC) crcFailed = true;
-                        else crcFailed = false;
                         //check command height - how many rows are occupated
                         int i1 = 0;
                         while ((commandDbLineNum + i1 + 1) < commandDataBase.Rows.Count && commandDataBase.Rows[commandDbLineNum + i1 + 1][CSVColumns.CommandName].ToString() == "")
@@ -437,10 +443,11 @@ public class ParseEscPos
 
     public static byte[] GetCRC(byte[] data, int length)
     {
-        if (CrcType == CrcTypes.SimpleCRC) return new byte[2] { SimpleCRC(data, length), 0 };
-        else if (CrcType == CrcTypes.CRC8) return new byte[2] { CRC8(data, length), 0 };
-        else if (CrcType == CrcTypes.CRC16) return CRC16(data, length);
-        return null;
+        byte[] tmpCrc = new byte[2];
+        if (CrcType == CrcTypes.SimpleCRC) tmpCrc[0] = SimpleCRC(data, length);
+        else if (CrcType == CrcTypes.CRC8) tmpCrc[0] = CRC8(data, length);
+        else if (CrcType == CrcTypes.CRC16) tmpCrc = CRC16(data, length);
+        return tmpCrc;
     }
 
     public static byte SimpleCRC(byte[] data, int length)

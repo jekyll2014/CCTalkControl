@@ -14,6 +14,8 @@ namespace WindowsFormsApplication1
         private DataTable ResultDatabase = new DataTable();
         private string SourceFile = "default.cct";
         private int SerialtimeOut = 3000;
+        private byte deviceAddress = 0;
+        private byte hostAddress = 1;
 
         public class ResultColumns
         {
@@ -124,11 +126,13 @@ namespace WindowsFormsApplication1
             for (int i = 0; i < ResultDatabase.Rows.Count; i++) tmpData += ResultDatabase.Rows[i][ResultColumns.Raw].ToString();
             data.AddRange(Accessory.ConvertHexToByteArray(tmpData));
             //0xFD (Address poll) command always to be sent to adress 0
-            if (data[2] == 0xfd) data[0] = 0;
-            data[1] = (byte)(data.Count - 3);
-            if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.SimpleCRC) data.Add(ParseEscPos.GetCRC(data.ToArray(), data.Count)[0]);
-            else if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC8) data.Add(ParseEscPos.GetCRC(data.ToArray(), data.Count)[0]);
-            else if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC16)
+            if (data[3] == 0xfd) data[0] = 0;
+            data[1] = (byte)(data.Count - 4);
+            ParseEscPos.CrcType = (byte)toolStripComboBox_CrcType.SelectedIndex;
+            byte[] tmpCrc = ParseEscPos.GetCRC(data.ToArray(), data.Count);
+            if (ParseEscPos.CrcType == ParseEscPos.CrcTypes.SimpleCRC ||
+                ParseEscPos.CrcType == ParseEscPos.CrcTypes.CRC8) data.Add(tmpCrc[0]);
+            else if (ParseEscPos.CrcType == ParseEscPos.CrcTypes.CRC16)
             {
                 byte[] crc = ParseEscPos.GetCRC(data.ToArray(), data.Count);
                 data[2] = crc[0];
@@ -174,6 +178,9 @@ namespace WindowsFormsApplication1
             toolStripTextBox_TimeOut.Text = SerialtimeOut.ToString();
             listBox_code.ContextMenuStrip = contextMenuStrip_code;
             dataGridView_commands.ContextMenuStrip = contextMenuStrip_dataBase;
+            textBox_deviceAddress_Leave(this, EventArgs.Empty);
+            textBox_hostAddress_Leave(this, EventArgs.Empty);
+
         }
 
         private void Button_find_Click(object sender, EventArgs e)
@@ -188,10 +195,6 @@ namespace WindowsFormsApplication1
             textBox_search.Clear();
             ParseEscPos.sourceData.Clear();
             ParseEscPos.sourceData.AddRange(data);
-            byte deviceAddress = 0;
-            byte hostAddress = 0;
-            byte.TryParse(textBox_deviceAddress.Text, out deviceAddress);
-            byte.TryParse(textBox_hostAddress.Text, out hostAddress);
             ParseEscPos.deviceAddress = deviceAddress;
             ParseEscPos.hostAddress = hostAddress;
             ParseEscPos.CrcType = (byte)toolStripComboBox_CrcType.SelectedIndex;
@@ -303,9 +306,9 @@ namespace WindowsFormsApplication1
         private void SaveHexFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             saveFileDialog.FileName = SourceFile;
-            saveFileDialog.Title = "Save HEX file";
-            saveFileDialog.DefaultExt = "txt";
-            saveFileDialog.Filter = "Text files|*.txt|HEX files|*.hex|All files|*.*";
+            saveFileDialog.Title = "Save .CCT hex file";
+            saveFileDialog.DefaultExt = "cct";
+            saveFileDialog.Filter = "CCT hex files|*.cct|Text files|*.txt|All files|*.*";
             saveFileDialog.ShowDialog();
         }
 
@@ -320,7 +323,7 @@ namespace WindowsFormsApplication1
 
         private void SaveFileDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (saveFileDialog.Title == "Save HEX file")
+            if (saveFileDialog.Title == "Save .CCT hex file")
             {
                 File.WriteAllText(saveFileDialog.FileName, "");
                 foreach (string s in listBox_code.Items) File.AppendAllText(saveFileDialog.FileName, s + "\r\n", Encoding.GetEncoding(CCTalkControl.Properties.Settings.Default.CodePage));
@@ -368,9 +371,9 @@ namespace WindowsFormsApplication1
         private void LoadHexToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog.FileName = "";
-            openFileDialog.Title = "Open HEX file";
-            openFileDialog.DefaultExt = "txt";
-            openFileDialog.Filter = "HEX files|*.hex|Text files|*.txt|All files|*.*";
+            openFileDialog.Title = "Open .CCT hex file";
+            openFileDialog.DefaultExt = "cct";
+            openFileDialog.Filter = "CCT Hex files|*.cct|Text files|*.txt|All files|*.*";
             openFileDialog.ShowDialog();
         }
 
@@ -385,7 +388,7 @@ namespace WindowsFormsApplication1
 
         private void OpenFileDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (openFileDialog.Title == "Open HEX file") //hex text read
+            if (openFileDialog.Title == "Open .CCT hex file") //hex text read
             {
                 SourceFile = openFileDialog.FileName;
                 commandList.Clear();
@@ -397,9 +400,9 @@ namespace WindowsFormsApplication1
                         command tmp = new command();
                         tmp.data = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(s));
                         //if command
-                        if (tmp.data[2] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Command;
+                        if (tmp.data[2] == 1 && tmp.data[1] == tmp.data.Length - 5) tmp.type = commandType.Command;
                         // if reply to host
-                        else if (tmp.data[0] == 1 && tmp.data[1] == tmp.data.Length - 3) tmp.type = commandType.Reply;
+                        else if (tmp.data[0] == 1 && tmp.data[1] == tmp.data.Length - 5) tmp.type = commandType.Reply;
                         //if length is not correct or source/destination address not host(always 1)
                         else tmp.type = commandType.Unrecognized;
                         commandList.Add(tmp);
@@ -573,9 +576,9 @@ namespace WindowsFormsApplication1
 
         private void Button_add_Click(object sender, EventArgs e)
         {
-            command tmp = CollectCommand();
-            commandList.Add(tmp);
-            listBox_code.Items.Add(commandMark[tmp.type] + Accessory.ConvertByteArrayToHex(tmp.data));
+            command tmpCmd = CollectCommand();
+            commandList.Add(tmpCmd);
+            listBox_code.Items.Add(commandMark[tmpCmd.type] + Accessory.ConvertByteArrayToHex(tmpCmd.data));
             listBox_code.SelectedIndex = listBox_code.Items.Count - 1;
         }
 
@@ -804,14 +807,11 @@ namespace WindowsFormsApplication1
 
         private void Button_Send_Click(object sender, EventArgs e)
         {
-            if (listBox_code.SelectedIndex == -1) return;
-            if (listBox_code.SelectedItem.ToString() == "") return;
+            if (listBox_code.SelectedIndex < 0 ||
+                commandList.Count <= listBox_code.SelectedIndex ||
+                commandList[listBox_code.SelectedIndex].data.Length < 5) return;
 
             byte[] _txBytes = Accessory.ConvertHexToByteArray(Accessory.CheckHexString(listBox_code.SelectedItem.ToString()));
-            byte deviceAddress = 0;
-            byte hostAddress = 0;
-            byte.TryParse(textBox_deviceAddress.Text, out deviceAddress);
-            byte.TryParse(textBox_hostAddress.Text, out hostAddress);
 
             if (_txBytes.Length >= 5 && _txBytes[0] == hostAddress && _txBytes[2] == deviceAddress && listBox_code.SelectedIndex > 0)
             {
@@ -820,8 +820,12 @@ namespace WindowsFormsApplication1
                 return;
             }
 
-            if (_txBytes.Length >= 5 && _txBytes[0] == deviceAddress && _txBytes[2] == hostAddress)
+            if (_txBytes.Length >= 5 && (_txBytes[0] == deviceAddress || _txBytes[0] == 0) && _txBytes[2] == hostAddress)
             {
+                command tmpCmd = commandList[listBox_code.SelectedIndex];
+                tmpCmd.type = commandType.Command;
+                commandList[listBox_code.SelectedIndex] = tmpCmd;
+                listBox_code.Items[listBox_code.SelectedIndex] = commandMark[tmpCmd.type] + Accessory.ConvertByteArrayToHex(tmpCmd.data);
                 try
                 {
                     SerialPort1.DiscardInBuffer();
@@ -892,7 +896,7 @@ namespace WindowsFormsApplication1
                                 {
                                     _frameOK = true;
                                     byte[] crc = new byte[2];
-                                    crc = ParseEscPos.GetCRC(_rxBytes.GetRange(0, _rxBytes.Count - 1).ToArray(), _rxBytes.Count - 1);
+                                    crc = ParseEscPos.GetCRC(_rxBytes.GetRange(0, _frameLength + 5).ToArray(), _rxBytes.Count - 1);
                                     if (toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.SimpleCRC || toolStripComboBox_CrcType.SelectedIndex == ParseEscPos.CrcTypes.CRC8)
                                     {
                                         if (crc[0] != _rxBytes[_rxBytes.Count - 1]) _crcError = true;
@@ -954,17 +958,17 @@ namespace WindowsFormsApplication1
 
         private void Button_SendAll_Click(object sender, EventArgs e)
         {
-            if (listBox_code.SelectedIndex == -1) listBox_code.SelectedIndex = 0;
+            if (listBox_code.SelectedIndex < 0) listBox_code.SelectedIndex = 0;
             for (int i = listBox_code.SelectedIndex; i < listBox_code.Items.Count; i++)
             {
                 listBox_code.SelectedIndex = i;
-                if (Accessory.CheckHexString(listBox_code.SelectedItem.ToString()).Length / 3 >= 5) //check minimum packet length
+                if (commandList[i].data.Length >= 5) //check minimum packet length
                 {
-                    if (Accessory.CheckHexString(listBox_code.SelectedItem.ToString()).Substring(0, 2) == textBox_hostAddress.Text &&
-                        Accessory.CheckHexString(listBox_code.SelectedItem.ToString()).Substring(3 * 3, 2) == textBox_deviceAddress.Text) //if it's a command
-                    {
-                        Button_Send_Click(button_SendAll, EventArgs.Empty);
-                    }
+                    //if (commandList[i].data[0] == deviceAddress &&
+                    //    commandList[i].data[2] == hostAddress) //if it's a command
+                    //{
+                    Button_Send_Click(button_SendAll, EventArgs.Empty);
+                    //}
                 }
             }
         }
@@ -1098,7 +1102,6 @@ namespace WindowsFormsApplication1
                 byte hostAddress = 0;
                 byte.TryParse(textBox_deviceAddress.Text, out deviceAddress);
                 byte.TryParse(textBox_hostAddress.Text, out hostAddress);
-                //if (listBox_code.Items[i].ToString().StartsWith("06 "))
                 if (_txBytes.Length >= 5 && _txBytes[0] == deviceAddress && _txBytes[2] == hostAddress)
                 {
                     listBox_code.Items.RemoveAt(i);
@@ -1114,5 +1117,16 @@ namespace WindowsFormsApplication1
 
         #endregion
 
+        private void textBox_deviceAddress_Leave(object sender, EventArgs e)
+        {
+            deviceAddress = 0;
+            byte.TryParse(textBox_deviceAddress.Text, out deviceAddress);
+        }
+
+        private void textBox_hostAddress_Leave(object sender, EventArgs e)
+        {
+            hostAddress = 0;
+            byte.TryParse(textBox_hostAddress.Text, out hostAddress);
+        }
     }
 }

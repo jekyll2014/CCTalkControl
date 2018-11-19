@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView_commands = new System.Windows.Forms.DataGridView();
             this.button_next = new System.Windows.Forms.Button();
             this.button_find = new System.Windows.Forms.Button();
@@ -53,6 +53,7 @@
             this.toolStripComboBox_PortDataBits = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripComboBox_PortParity = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripComboBox_PortStopBits = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripComboBox_CrcType = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripMenuItem_TimeOut = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox_TimeOut = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem_Connect = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,7 +87,6 @@
             this.contextMenuStrip_dataBase = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newCommandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripComboBox_CrcType = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_commands)).BeginInit();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -111,14 +111,14 @@
             this.dataGridView_commands.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.dataGridView_commands.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridView_commands.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_commands.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView_commands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_commands.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dataGridView_commands.Location = new System.Drawing.Point(0, 0);
@@ -335,6 +335,17 @@
             this.toolStripComboBox_PortStopBits.Name = "toolStripComboBox_PortStopBits";
             this.toolStripComboBox_PortStopBits.Size = new System.Drawing.Size(121, 23);
             // 
+            // toolStripComboBox_CrcType
+            // 
+            this.toolStripComboBox_CrcType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBox_CrcType.Items.AddRange(new object[] {
+            "SimpleCRC",
+            "CRC8",
+            "CRC16"});
+            this.toolStripComboBox_CrcType.Name = "toolStripComboBox_CrcType";
+            this.toolStripComboBox_CrcType.Size = new System.Drawing.Size(121, 23);
+            this.toolStripComboBox_CrcType.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox_CrcType_SelectedIndexChanged);
+            // 
             // toolStripMenuItem_TimeOut
             // 
             this.toolStripMenuItem_TimeOut.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -481,6 +492,7 @@
             this.textBox_deviceAddress.Size = new System.Drawing.Size(80, 20);
             this.textBox_deviceAddress.TabIndex = 14;
             this.textBox_deviceAddress.Text = "0";
+            this.textBox_deviceAddress.Leave += new System.EventHandler(this.textBox_deviceAddress_Leave);
             // 
             // textBox_hostAddress
             // 
@@ -491,6 +503,7 @@
             this.textBox_hostAddress.Size = new System.Drawing.Size(80, 20);
             this.textBox_hostAddress.TabIndex = 14;
             this.textBox_hostAddress.Text = "1";
+            this.textBox_hostAddress.Leave += new System.EventHandler(this.textBox_hostAddress_Leave);
             // 
             // label3
             // 
@@ -674,17 +687,6 @@
             this.findThisToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.findThisToolStripMenuItem.Text = "Find this";
             this.findThisToolStripMenuItem.Click += new System.EventHandler(this.FindThisToolStripMenuItem_Click);
-            // 
-            // toolStripComboBox_CrcType
-            // 
-            this.toolStripComboBox_CrcType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolStripComboBox_CrcType.Items.AddRange(new object[] {
-            "SimpleCRC",
-            "CRC8",
-            "CRC16"});
-            this.toolStripComboBox_CrcType.Name = "toolStripComboBox_CrcType";
-            this.toolStripComboBox_CrcType.Size = new System.Drawing.Size(121, 23);
-            this.toolStripComboBox_CrcType.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox_CrcType_SelectedIndexChanged);
             // 
             // Form1
             // 
