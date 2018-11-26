@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -585,4 +586,13 @@ public partial class Accessory
         }
     }
 
+    public string AssemblyVersion()
+    {
+        return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+    }
+
+    public string ProductVersion()
+    {
+        return Application.ProductVersion.ToString();
+    }
 }
