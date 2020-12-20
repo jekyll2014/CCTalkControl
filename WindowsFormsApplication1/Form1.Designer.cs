@@ -253,7 +253,7 @@
             this.showIncorrectRepliesToolStripMenuItem.Name = "showIncorrectRepliesToolStripMenuItem";
             this.showIncorrectRepliesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.showIncorrectRepliesToolStripMenuItem.Text = "Show incorrect replies";
-            this.showIncorrectRepliesToolStripMenuItem.Click += new System.EventHandler(this.showIncorrectRepliesToolStripMenuItem_Click);
+            this.showIncorrectRepliesToolStripMenuItem.Click += new System.EventHandler(this.ShowIncorrectRepliesToolStripMenuItem_Click);
             // 
             // autoParseReplyToolStripMenuItem
             // 
@@ -262,7 +262,7 @@
             this.autoParseReplyToolStripMenuItem.Name = "autoParseReplyToolStripMenuItem";
             this.autoParseReplyToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.autoParseReplyToolStripMenuItem.Text = "Auto parse reply";
-            this.autoParseReplyToolStripMenuItem.Click += new System.EventHandler(this.autoParseReplyToolStripMenuItem_Click);
+            this.autoParseReplyToolStripMenuItem.Click += new System.EventHandler(this.AutoParseReplyToolStripMenuItem_Click);
             // 
             // COMPortToolStripMenuItem
             // 
@@ -343,7 +343,7 @@
             "CRC16 CCITT"});
             this.toolStripComboBox_CrcType.Name = "toolStripComboBox_CrcType";
             this.toolStripComboBox_CrcType.Size = new System.Drawing.Size(121, 23);
-            this.toolStripComboBox_CrcType.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox_CrcType_SelectedIndexChanged);
+            this.toolStripComboBox_CrcType.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBox_CrcType_SelectedIndexChanged);
             // 
             // toolStripMenuItem_TimeOut
             // 
@@ -491,7 +491,7 @@
             this.textBox_deviceAddress.Size = new System.Drawing.Size(80, 20);
             this.textBox_deviceAddress.TabIndex = 14;
             this.textBox_deviceAddress.Text = "0";
-            this.textBox_deviceAddress.Leave += new System.EventHandler(this.textBox_deviceAddress_Leave);
+            this.textBox_deviceAddress.Leave += new System.EventHandler(this.TextBox_deviceAddress_Leave);
             // 
             // textBox_hostAddress
             // 
@@ -502,7 +502,7 @@
             this.textBox_hostAddress.Size = new System.Drawing.Size(80, 20);
             this.textBox_hostAddress.TabIndex = 14;
             this.textBox_hostAddress.Text = "1";
-            this.textBox_hostAddress.Leave += new System.EventHandler(this.textBox_hostAddress_Leave);
+            this.textBox_hostAddress.Leave += new System.EventHandler(this.TextBox_hostAddress_Leave);
             // 
             // label3
             // 
