@@ -671,8 +671,4 @@ public static class Accessory
         return Assembly.GetExecutingAssembly().GetName().Version.ToString();
     }
 
-    public static string ProductVersion()
-    {
-        return Application.ProductVersion;
-    }
 }
